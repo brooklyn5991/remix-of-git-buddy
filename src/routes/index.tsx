@@ -4,7 +4,7 @@ import { SiteFooter } from "@/components/site-footer";
 import heroCourtyard from "@/assets/hero-courtyard.jpg";
 import roomExecutive from "@/assets/room-executive.jpg";
 import roomDeluxe from "@/assets/room-deluxe.jpg";
-import diningImg from "@/assets/dining.jpg";
+import diningImg from "@/assets/dining.jpeg";
 import gardenImg from "@/assets/garden.jpg";
 import logoAsset from "@/assets/garens-garden-logo.jpeg.asset.json";
 
@@ -141,10 +141,12 @@ function Index() {
                     height={1000}
                     className="w-full h-full object-cover"
                   />
-                  <div className="absolute inset-0 bg-gradient-to-t from-deep/80 to-transparent" />
+                  <div className="absolute inset-0 bg-black/50" />
+                  <div className="absolute inset-0 bg-gradient-to-t from-deep/70 via-transparent to-transparent" />
                   <div className="absolute bottom-4 left-5">
                     <p className="text-[10px] uppercase tracking-[0.25em] text-gold/80">Dining</p>
-                    <p className="font-serif text-gold-light text-xl">The Restaurant</p>
+                    <p className="font-serif text-gold-light text-xl">The Lounge</p>
+                    <p className="text-xs uppercase tracking-[0.25em] text-gold/70 mt-1">Coming soon</p>
                   </div>
                 </div>
               </div>
