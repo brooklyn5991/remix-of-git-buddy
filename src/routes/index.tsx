@@ -5,6 +5,7 @@ import heroCourtyard from "@/assets/hero-courtyard.jpg";
 import roomExecutive from "@/assets/room-executive.jpg";
 import roomDeluxe from "@/assets/room-deluxe.jpg";
 import diningImg from "@/assets/dining.jpeg";
+import loungeImg from "@/assets/bar.jpg";
 import gardenImg from "@/assets/garden.jpg";
 import logoAsset from "@/assets/garens-garden-logo.jpeg.asset.json";
 
@@ -134,12 +135,12 @@ function Index() {
               <div className="md:col-span-1 bg-warm/10 ring-1 ring-gold/10 p-1">
                 <div className="relative w-full h-[240px] md:h-[300px] lg:h-full lg:min-h-[260px] overflow-hidden rounded-[8px]">
                   <img
-                    src={diningImg}
-                    alt="Garen's Garden restaurant"
+                    src={loungeImg}
+                    alt="Garen's Garden lounge"
                     loading="lazy"
                     width={800}
                     height={1000}
-                    className="w-full h-full object-cover blur-md md:blur-none"
+                    className="w-full h-full object-cover mobile-blur"
                   />
                   <div className="absolute inset-0 bg-black/50" />
                   <div className="absolute inset-0 bg-gradient-to-t from-deep/70 via-transparent to-transparent" />

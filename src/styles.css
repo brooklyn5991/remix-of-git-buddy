@@ -176,3 +176,18 @@
     display: none;
   }
 }
+
+@utility mobile-blur {
+  filter: blur(12px);
+  -webkit-filter: blur(12px);
+  transform: translate3d(0, 0, 0);
+  will-change: filter;
+
+  @media (min-width: 768px) {
+    filter: none;
+    -webkit-filter: none;
+    transform: none;
+    will-change: auto;
+  }
+}
+
