@@ -60,12 +60,19 @@ function Dashboard() {
   // Metrics computed from reservations list.
   const allRes = reservations.data ?? [];
   const totalRooms = rooms.data?.length ?? 0;
-  const active = allRes.filter((r) => r.status === "confirmed" || r.status === "checked_in");
+  
+  // A room is occupied today if it has an active reservation (pending, confirmed, or checked_in) overlapping today.
+  const todayStr = new Date().toISOString().slice(0, 10);
+  const occupiedToday = allRes.filter((r) => 
+    (r.status === "confirmed" || r.status === "checked_in" || r.status === "pending") &&
+    r.check_in <= todayStr &&
+    r.check_out > todayStr
+  );
+  
+  const active = allRes.filter((r) => r.status === "confirmed" || r.status === "checked_in" || r.status === "pending");
   const inHouse = allRes.filter((r) => r.status === "checked_in");
-  // Availability for the dates currently selected in the walk-in form.
-  // For the staff dashboard "Rooms available now" should reflect current
-  // active reservations (confirmed or checked in), so subtract those.
-  const availableNow = totalRooms - active.length;
+  const availableNow = totalRooms - occupiedToday.length;
+
 
 
   return (

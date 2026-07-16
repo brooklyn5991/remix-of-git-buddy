@@ -10,14 +10,12 @@ import { roomImage } from "@/lib/room-images";
 const currency = (n: number) =>
   new Intl.NumberFormat("en-NG", { style: "currency", currency: "NGN", maximumFractionDigits: 0 }).format(n);
 
+const today = () => {
+  return new Date().toISOString().slice(0, 10);
+};
 const tomorrow = () => {
   const d = new Date();
   d.setDate(d.getDate() + 1);
-  return d.toISOString().slice(0, 10);
-};
-const dayAfterTomorrow = () => {
-  const d = new Date();
-  d.setDate(d.getDate() + 2);
   return d.toISOString().slice(0, 10);
 };
 
@@ -29,8 +27,8 @@ function RoomsPage() {
   const fetchRooms = useServerFn(listRooms);
   const fetchBooked = useServerFn(getBookedRoomIds);
 
-  const [checkIn, setCheckIn] = useState(tomorrow());
-  const [checkOut, setCheckOut] = useState(dayAfterTomorrow());
+  const [checkIn, setCheckIn] = useState(today());
+  const [checkOut, setCheckOut] = useState(tomorrow());
   const [tierFilter, setTierFilter] = useState<"All" | "Standard" | "Deluxe" | "Executive">("All");
 
   const roomsQuery = useQuery({

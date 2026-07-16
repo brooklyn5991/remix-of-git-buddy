@@ -10,6 +10,10 @@ type ServerEntry = {
 let serverEntryPromise: Promise<ServerEntry> | undefined;
 
 async function getServerEntry(): Promise<ServerEntry> {
+  if (typeof window === "undefined" && !globalThis.WebSocket) {
+    const wsModule = await import("ws");
+    globalThis.WebSocket = (wsModule.default ?? wsModule) as any;
+  }
   if (!serverEntryPromise) {
     serverEntryPromise = import("@tanstack/react-start/server-entry").then(
       (m) => (m.default ?? m) as ServerEntry,

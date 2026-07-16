@@ -39,19 +39,17 @@ function RoomDetail() {
   const roomsQuery = useQuery({ queryKey: ["rooms"], queryFn: () => fetchRooms() });
   const room = (roomsQuery.data ?? []).find((r) => r.room_number === slug);
 
+  const today = () => {
+    return new Date().toISOString().slice(0, 10);
+  };
   const tomorrow = () => {
     const d = new Date();
     d.setDate(d.getDate() + 1);
     return d.toISOString().slice(0, 10);
   };
-  const dayAfter = () => {
-    const d = new Date();
-    d.setDate(d.getDate() + 2);
-    return d.toISOString().slice(0, 10);
-  };
 
-  const [checkIn, setCheckIn] = useState(search.check_in || tomorrow());
-  const [checkOut, setCheckOut] = useState(search.check_out || dayAfter());
+  const [checkIn, setCheckIn] = useState(search.check_in || today());
+  const [checkOut, setCheckOut] = useState(search.check_out || tomorrow());
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
