@@ -5,7 +5,7 @@ import { useQuery, useMutation } from "@tanstack/react-query";
 import { z } from "zod";
 import { SiteNav } from "@/components/site-nav";
 import { SiteFooter } from "@/components/site-footer";
-import { listRooms, createOnlineReservation, getBookedRoomIds, verifySquadPayment } from "@/lib/hotel.functions";
+import { listRooms, createOnlineReservation, getBookedRoomIds, verifySquadPayment, settleFakePayment } from "@/lib/hotel.functions";
 import { roomImage } from "@/lib/room-images";
 
 
@@ -61,6 +61,7 @@ function RoomDetail() {
   });
 
   const verify = useServerFn(verifySquadPayment);
+  const settle = useServerFn(settleFakePayment);
   const [payError, setPayError] = useState<string | null>(null);
   const [verifying, setVerifying] = useState(false);
 
@@ -82,13 +83,17 @@ function RoomDetail() {
       console.log("isPlaceholder evaluated to:", isPlaceholder);
 
       if (isPlaceholder) {
-        console.log("Redirecting to simulated checkout page `/squadco/" + res.id + "`");
+        console.log("Placeholder/Sandbox key detected. Simulating successful checkout immediately...");
         try {
-          await navigate({ to: "/squadco/$id", params: { id: res.id } });
-          console.log("Navigation command executed successfully.");
-        } catch (navErr) {
-          console.error("Navigation failed:", navErr);
-          setPayError("Navigation failed: " + (navErr as Error).message);
+          setVerifying(true);
+          await settle({ data: { reservation_id: res.id, outcome: "paid" } });
+          await navigate({ to: "/reservation/$id", params: { id: res.id }, search: { paid: 1 } });
+          console.log("Navigation to reservation page completed.");
+        } catch (err) {
+          console.error("Automatic settlement failed:", err);
+          setPayError("Automatic settlement failed: " + (err as Error).message);
+        } finally {
+          setVerifying(false);
         }
         return;
       }
