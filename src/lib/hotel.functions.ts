@@ -129,18 +129,33 @@ export const settleFakePayment = createServerFn({ method: "POST" })
     return updated;
   });
 
-// ---------------- Public: verify a real Paystack transaction ----------------
+// ---------------- Public: verify a real Squadco transaction ----------------
 const verifySchema = z.object({
   reservation_id: z.string().uuid(),
   reference: z.string().min(4).max(200),
 });
-export const verifyPaystackPayment = createServerFn({ method: "POST" })
+export const verifySquadPayment = createServerFn({ method: "POST" })
   .inputValidator((d: unknown) => verifySchema.parse(d))
   .handler(async ({ data }) => {
-    const secret = process.env.PAYSTACK_SECRET_KEY;
-    if (!secret) throw new Error("Paystack secret key not configured");
-
     const sb = publicClient();
+
+    // Support mock testing for developers who haven't registered on Squadco yet
+    if (data.reference.startsWith("FAKE-SQD-")) {
+      const { error: uErr } = await sb
+        .from("reservations")
+        .update({
+          payment_status: "paid",
+          payment_reference: data.reference,
+          status: "confirmed",
+        })
+        .eq("id", data.reservation_id);
+      if (uErr) throw new Error(uErr.message);
+      return { ok: true };
+    }
+
+    const secret = process.env.SQUAD_SECRET_KEY;
+    if (!secret) throw new Error("Squad secret key not configured");
+
     const { data: reservation, error: rErr } = await sb
       .from("reservations")
       .select("id, total_ngn, payment_status")
@@ -148,15 +163,29 @@ export const verifyPaystackPayment = createServerFn({ method: "POST" })
       .maybeSingle();
     if (rErr || !reservation) throw new Error("Reservation not found");
 
-    const resp = await fetch(`https://api.paystack.co/transaction/verify/${encodeURIComponent(data.reference)}`, {
+    const isSandbox = secret.startsWith("sandbox_") || secret.includes("test");
+    const baseUrl = isSandbox
+      ? "https://sandbox-api-d.squadco.com"
+      : "https://api-d.squadco.com";
+
+    const resp = await fetch(`${baseUrl}/transaction/verify/${encodeURIComponent(data.reference)}`, {
       headers: { Authorization: `Bearer ${secret}` },
     });
-    const body = (await resp.json()) as { status: boolean; data?: { status: string; amount: number; currency: string } };
-    if (!body.status || !body.data) throw new Error("Could not verify transaction with Paystack");
+    const body = (await resp.json()) as { 
+      status: number; 
+      success: boolean;
+      data?: { 
+        transaction_status: string; 
+        transaction_amount: number; 
+        transaction_currency_id: string; 
+      } 
+    };
+
+    if (!body.success || !body.data) throw new Error("Could not verify transaction with Squadco");
 
     const ok =
-      body.data.status === "success" &&
-      body.data.amount === (reservation.total_ngn as number) * 100;
+      body.data.transaction_status === "Success" &&
+      body.data.transaction_amount === (reservation.total_ngn as number) * 100;
 
     if (!ok) {
       await sb
@@ -178,6 +207,7 @@ export const verifyPaystackPayment = createServerFn({ method: "POST" })
     if (uErr) throw new Error(uErr.message);
     return { ok: true };
   });
+
 
 // ---------------- Public: fetch reservation by id (for payment page) ----------------
 export const getReservation = createServerFn({ method: "POST" })

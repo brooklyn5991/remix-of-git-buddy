@@ -5,7 +5,7 @@ import { useQuery, useMutation } from "@tanstack/react-query";
 import { z } from "zod";
 import { SiteNav } from "@/components/site-nav";
 import { SiteFooter } from "@/components/site-footer";
-import { listRooms, createOnlineReservation, getBookedRoomIds, verifyPaystackPayment } from "@/lib/hotel.functions";
+import { listRooms, createOnlineReservation, getBookedRoomIds, verifySquadPayment } from "@/lib/hotel.functions";
 import { roomImage } from "@/lib/room-images";
 
 
@@ -60,7 +60,7 @@ function RoomDetail() {
     enabled: !!checkIn && !!checkOut && checkOut > checkIn,
   });
 
-  const verify = useServerFn(verifyPaystackPayment);
+  const verify = useServerFn(verifySquadPayment);
   const [payError, setPayError] = useState<string | null>(null);
   const [verifying, setVerifying] = useState(false);
 
@@ -74,41 +74,80 @@ function RoomDetail() {
       check_out: string;
     }) => reserve({ data }),
     onSuccess: async (res) => {
+      console.log("Mutation succeeded! Reservation response:", res);
       setPayError(null);
-      const pk = import.meta.env.VITE_PAYSTACK_PUBLIC_KEY as string | undefined;
-      if (!pk) {
-        setPayError("Paystack public key is not configured.");
+      const pk = import.meta.env.VITE_SQUAD_PUBLIC_KEY as string | undefined;
+      console.log("Squadco Public Key (pk):", pk);
+      const isPlaceholder = !pk || pk.includes("yoursquadkeyhere") || pk.startsWith("sandbox_");
+      console.log("isPlaceholder evaluated to:", isPlaceholder);
+
+      if (isPlaceholder) {
+        console.log("Redirecting to simulated checkout page `/squadco/" + res.id + "`");
+        try {
+          await navigate({ to: "/squadco/$id", params: { id: res.id } });
+          console.log("Navigation command executed successfully.");
+        } catch (navErr) {
+          console.error("Navigation failed:", navErr);
+          setPayError("Navigation failed: " + (navErr as Error).message);
+        }
         return;
       }
-      const { default: PaystackPop } = await import("@paystack/inline-js");
-      const popup = new PaystackPop();
-      popup.newTransaction({
-        key: pk,
-        email: email,
-        amount: res.total_ngn * 100,
-        currency: "NGN",
-        metadata: {
-          reservation_id: res.id,
-          confirmation_code: res.confirmation_code,
-          room_number: res.room_number,
-          guest_name: name,
-          guest_phone: phone,
-        },
-        onSuccess: async (tx) => {
-          try {
-            setVerifying(true);
-            await verify({ data: { reservation_id: res.id, reference: tx.reference } });
-            navigate({ to: "/reservation/$id", params: { id: res.id }, search: { paid: 1 } });
-          } catch (err) {
-            setPayError((err as Error).message);
-          } finally {
-            setVerifying(false);
+
+      console.log("Real key detected, loading Squadco inline script...");
+      // Load Squadco inline script dynamically
+      const loadSquad = () => {
+        return new Promise<void>((resolve, reject) => {
+          if ((window as any).squad) {
+            resolve();
+            return;
           }
-        },
-        onCancel: () => {
-          setPayError("Payment cancelled. Your reservation is still pending — try again to confirm.");
-        },
-      });
+          const script = document.createElement("script");
+          script.src = "https://checkout.squadco.com/widget/squad.min.js";
+          script.onload = () => resolve();
+          script.onerror = () => reject(new Error("Failed to load Squadco payment widget"));
+          document.body.appendChild(script);
+        });
+      };
+
+      try {
+        await loadSquad();
+        console.log("Squadco script loaded. Opening widget...");
+        const squadInstance = new (window as any).squad({
+          onClose: () => {
+            console.log("Squadco widget closed by user.");
+            setPayError("Payment cancelled. Your reservation is still pending — try again to confirm.");
+          },
+          onLoad: () => {
+            console.log("Squadco widget loaded successfully.");
+          },
+          onSuccess: async (tx: any) => {
+            console.log("Squadco payment success callback:", tx);
+            try {
+              setVerifying(true);
+              await verify({ data: { reservation_id: res.id, reference: tx.transaction_ref } });
+              navigate({ to: "/reservation/$id", params: { id: res.id }, search: { paid: 1 } });
+            } catch (err) {
+              console.error("Verification failed:", err);
+              setPayError((err as Error).message);
+            } finally {
+              setVerifying(false);
+            }
+          },
+          onFailure: (err: any) => {
+            console.error("Squadco widget failure:", err);
+            setPayError(err?.message || "Payment failed.");
+          },
+          public_key: pk,
+          amount: res.total_ngn * 100, // in kobo
+          currency_code: "NGN",
+          email: email,
+        });
+        squadInstance.setup();
+        squadInstance.open();
+      } catch (err) {
+        console.error("Squadco integration error:", err);
+        setPayError((err as Error).message);
+      }
     },
   });
 
@@ -271,7 +310,7 @@ function RoomDetail() {
                         : verifying
                           ? "Verifying payment…"
                           : mutation.isPending
-                            ? "Opening Paystack…"
+                            ? "Opening Squadco…"
                             : "Confirm & Pay →"}
                     </button>
                   </div>
@@ -282,7 +321,7 @@ function RoomDetail() {
                     </p>
                   )}
                   <p className="text-xs text-zinc-400 pt-2">
-                    A secure Paystack popup will open to complete payment. Your room is locked once payment succeeds.
+                    A secure Squadco popup or checkout page will open to complete payment. Your room is locked once payment succeeds.
                   </p>
                 </form>
               )}

@@ -2,7 +2,7 @@ import { Link, useRouterState } from "@tanstack/react-router";
 
 export function BookFab() {
   const pathname = useRouterState({ select: (s) => s.location.pathname });
-  const hideOn = ["/rooms", "/auth", "/dashboard", "/vault", "/paystack", "/reservation"];
+  const hideOn = ["/rooms", "/auth", "/dashboard", "/vault", "/squadco", "/reservation"];
   if (hideOn.some((p) => pathname === p || pathname.startsWith(p + "/"))) return null;
 
   return (

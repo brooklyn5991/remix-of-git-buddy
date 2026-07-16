@@ -141,6 +141,8 @@ function RootShell({ children }: { children: ReactNode }) {
   );
 }
 
+import { Toaster } from "../components/ui/sonner";
+
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
 
@@ -149,6 +151,7 @@ function RootComponent() {
       {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
       <Outlet />
       <BookFab />
+      <Toaster />
     </QueryClientProvider>
   );
 }

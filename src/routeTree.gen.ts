@@ -17,9 +17,9 @@ import { Route as AboutRouteImport } from './routes/about'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as RoomsIndexRouteImport } from './routes/rooms.index'
+import { Route as SquadcoIdRouteImport } from './routes/squadco.$id'
 import { Route as RoomsSlugRouteImport } from './routes/rooms.$slug'
 import { Route as ReservationIdRouteImport } from './routes/reservation.$id'
-import { Route as PaystackIdRouteImport } from './routes/paystack.$id'
 import { Route as AuthenticatedVaultRouteImport } from './routes/_authenticated/vault'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
 
@@ -62,6 +62,11 @@ const RoomsIndexRoute = RoomsIndexRouteImport.update({
   path: '/',
   getParentRoute: () => RoomsRoute,
 } as any)
+const SquadcoIdRoute = SquadcoIdRouteImport.update({
+  id: '/squadco/$id',
+  path: '/squadco/$id',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const RoomsSlugRoute = RoomsSlugRouteImport.update({
   id: '/$slug',
   path: '/$slug',
@@ -70,11 +75,6 @@ const RoomsSlugRoute = RoomsSlugRouteImport.update({
 const ReservationIdRoute = ReservationIdRouteImport.update({
   id: '/reservation/$id',
   path: '/reservation/$id',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const PaystackIdRoute = PaystackIdRouteImport.update({
-  id: '/paystack/$id',
-  path: '/paystack/$id',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AuthenticatedVaultRoute = AuthenticatedVaultRouteImport.update({
@@ -97,9 +97,9 @@ export interface FileRoutesByFullPath {
   '/rooms': typeof RoomsRouteWithChildren
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/vault': typeof AuthenticatedVaultRoute
-  '/paystack/$id': typeof PaystackIdRoute
   '/reservation/$id': typeof ReservationIdRoute
   '/rooms/$slug': typeof RoomsSlugRoute
+  '/squadco/$id': typeof SquadcoIdRoute
   '/rooms/': typeof RoomsIndexRoute
 }
 export interface FileRoutesByTo {
@@ -110,9 +110,9 @@ export interface FileRoutesByTo {
   '/gallery': typeof GalleryRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/vault': typeof AuthenticatedVaultRoute
-  '/paystack/$id': typeof PaystackIdRoute
   '/reservation/$id': typeof ReservationIdRoute
   '/rooms/$slug': typeof RoomsSlugRoute
+  '/squadco/$id': typeof SquadcoIdRoute
   '/rooms': typeof RoomsIndexRoute
 }
 export interface FileRoutesById {
@@ -126,9 +126,9 @@ export interface FileRoutesById {
   '/rooms': typeof RoomsRouteWithChildren
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
   '/_authenticated/vault': typeof AuthenticatedVaultRoute
-  '/paystack/$id': typeof PaystackIdRoute
   '/reservation/$id': typeof ReservationIdRoute
   '/rooms/$slug': typeof RoomsSlugRoute
+  '/squadco/$id': typeof SquadcoIdRoute
   '/rooms/': typeof RoomsIndexRoute
 }
 export interface FileRouteTypes {
@@ -142,9 +142,9 @@ export interface FileRouteTypes {
     | '/rooms'
     | '/dashboard'
     | '/vault'
-    | '/paystack/$id'
     | '/reservation/$id'
     | '/rooms/$slug'
+    | '/squadco/$id'
     | '/rooms/'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -155,9 +155,9 @@ export interface FileRouteTypes {
     | '/gallery'
     | '/dashboard'
     | '/vault'
-    | '/paystack/$id'
     | '/reservation/$id'
     | '/rooms/$slug'
+    | '/squadco/$id'
     | '/rooms'
   id:
     | '__root__'
@@ -170,9 +170,9 @@ export interface FileRouteTypes {
     | '/rooms'
     | '/_authenticated/dashboard'
     | '/_authenticated/vault'
-    | '/paystack/$id'
     | '/reservation/$id'
     | '/rooms/$slug'
+    | '/squadco/$id'
     | '/rooms/'
   fileRoutesById: FileRoutesById
 }
@@ -184,8 +184,8 @@ export interface RootRouteChildren {
   ContactRoute: typeof ContactRoute
   GalleryRoute: typeof GalleryRoute
   RoomsRoute: typeof RoomsRouteWithChildren
-  PaystackIdRoute: typeof PaystackIdRoute
   ReservationIdRoute: typeof ReservationIdRoute
+  SquadcoIdRoute: typeof SquadcoIdRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -246,6 +246,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof RoomsIndexRouteImport
       parentRoute: typeof RoomsRoute
     }
+    '/squadco/$id': {
+      id: '/squadco/$id'
+      path: '/squadco/$id'
+      fullPath: '/squadco/$id'
+      preLoaderRoute: typeof SquadcoIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/rooms/$slug': {
       id: '/rooms/$slug'
       path: '/$slug'
@@ -258,13 +265,6 @@ declare module '@tanstack/react-router' {
       path: '/reservation/$id'
       fullPath: '/reservation/$id'
       preLoaderRoute: typeof ReservationIdRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/paystack/$id': {
-      id: '/paystack/$id'
-      path: '/paystack/$id'
-      fullPath: '/paystack/$id'
-      preLoaderRoute: typeof PaystackIdRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/_authenticated/vault': {
@@ -317,8 +317,8 @@ const rootRouteChildren: RootRouteChildren = {
   ContactRoute: ContactRoute,
   GalleryRoute: GalleryRoute,
   RoomsRoute: RoomsRouteWithChildren,
-  PaystackIdRoute: PaystackIdRoute,
   ReservationIdRoute: ReservationIdRoute,
+  SquadcoIdRoute: SquadcoIdRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
