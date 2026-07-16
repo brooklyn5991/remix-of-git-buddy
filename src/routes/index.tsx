@@ -139,7 +139,7 @@ function Index() {
                     loading="lazy"
                     width={800}
                     height={1000}
-                    className="w-full h-full object-cover"
+                    className="w-full h-full object-cover blur-sm md:blur-0"
                   />
                   <div className="absolute inset-0 bg-black/50" />
                   <div className="absolute inset-0 bg-gradient-to-t from-deep/70 via-transparent to-transparent" />
