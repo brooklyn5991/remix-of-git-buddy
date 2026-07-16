@@ -3,7 +3,7 @@ import { SiteNav } from "@/components/site-nav";
 import { SiteFooter } from "@/components/site-footer";
 import hero from "@/assets/hero-courtyard.jpg";
 import garden from "@/assets/garden.jpg";
-import dining from "@/assets/dining.jpg";
+import dining from "@/assets/dining.jpeg";
 import exterior from "@/assets/exterior.jpg";
 import bar from "@/assets/bar.jpg";
 import bathroom from "@/assets/bathroom.jpg";
