@@ -112,9 +112,9 @@ const settleSchema = z.object({
 export const settleFakePayment = createServerFn({ method: "POST" })
   .inputValidator((d: unknown) => settleSchema.parse(d))
   .handler(async ({ data }) => {
-    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-    const reference = "FAKE-PSK-" + Math.random().toString(36).slice(2, 10).toUpperCase();
-    const { data: updated, error } = await supabaseAdmin
+    const sb = publicClient();
+    const reference = "FAKE-SQD-" + Math.random().toString(36).slice(2, 10).toUpperCase();
+    const { data: updated, error } = await sb
       .from("reservations")
       .update({
         payment_status: data.outcome,
