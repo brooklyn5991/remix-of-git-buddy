@@ -66,7 +66,7 @@ function Dashboard() {
   const occupiedToday = allRes.filter((r) => 
     (r.status === "confirmed" || r.status === "checked_in" || r.status === "pending") &&
     r.check_in <= todayStr &&
-    r.check_out > todayStr
+    r.check_out >= todayStr
   );
   
   const active = allRes.filter((r) => r.status === "confirmed" || r.status === "checked_in" || r.status === "pending");
