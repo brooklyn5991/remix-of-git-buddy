@@ -44,19 +44,20 @@ function GalleryPage() {
     <div className="bg-deep font-sans text-gold-light min-h-screen antialiased">
       <SiteNav />
       <main className="pt-24 pb-24 md:pb-32 overflow-x-hidden">
-        <section className="px-4 sm:px-6 py-12 md:py-16 max-w-7xl mx-auto">
+        <section className="px-4 sm:px-6 py-12 md:py-16 max-w-7xl mx-auto animate-fade-in-up">
           <p className="text-[10px] uppercase tracking-[0.4em] text-gold mb-6">Gallery</p>
           <h1 className="font-serif text-4xl sm:text-5xl md:text-6xl text-gold-light leading-tight max-w-3xl">
             Every corner of the house, quietly documented.
           </h1>
         </section>
 
-        <section className="px-4 sm:px-6 max-w-7xl mx-auto">
+        <section className="px-4 sm:px-6 max-w-7xl mx-auto animate-scale-in delay-200">
           <div className="grid grid-cols-1 md:grid-cols-4 auto-rows-[190px] sm:auto-rows-[230px] md:auto-rows-[260px] gap-3">
-            {items.map((i) => (
+            {items.map((i, idx) => (
               <figure
                 key={i.caption}
-                className={`relative overflow-hidden ring-1 ring-gold/10 group ${i.span}`}
+                className={`relative overflow-hidden ring-1 ring-gold/10 group ${i.span} hover-glow animate-fade-in-up`}
+                style={{ animationDelay: `${(idx + 1) * 75}ms` }}
               >
                 <img
                   src={i.src}
@@ -64,8 +65,8 @@ function GalleryPage() {
                   loading="lazy"
                   className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-[1.04]"
                 />
-                <div className="absolute inset-0 bg-gradient-to-t from-deep/85 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
-                <figcaption className="absolute bottom-0 left-0 p-4 text-[10px] uppercase tracking-[0.25em] text-gold-light opacity-0 group-hover:opacity-100 transition-opacity">
+                <div className="absolute inset-0 bg-gradient-to-t from-deep/85 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                <figcaption className="absolute bottom-0 left-0 p-4 text-[10px] uppercase tracking-[0.25em] text-gold-light opacity-0 group-hover:opacity-100 transition-opacity duration-300">
                   {i.caption}
                 </figcaption>
               </figure>

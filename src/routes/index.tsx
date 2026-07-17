@@ -27,26 +27,26 @@ function Index() {
             <img
               src={logoAsset.url}
               alt="Garen's Garden Hotel & Suite"
-              className="mx-auto mt-6 sm:mt-0 mb-8 sm:mb-10 w-full max-w-[280px] sm:max-w-md md:max-w-xl h-auto"
+              className="mx-auto mt-6 sm:mt-0 mb-8 sm:mb-10 w-full max-w-[280px] sm:max-w-md md:max-w-xl h-auto animate-fade-in"
             />
-            <p className="text-[10px] font-medium uppercase tracking-[0.4em] text-gold/70 mb-8">
+            <p className="text-[10px] font-medium uppercase tracking-[0.4em] text-gold/70 mb-8 animate-fade-in-up delay-100">
               Reborn 2026 · 21 Rooms
             </p>
 
-            <h1 className="font-serif text-4xl sm:text-5xl md:text-7xl text-gold-light leading-[1.05] text-balance mb-8">
+            <h1 className="font-serif text-4xl sm:text-5xl md:text-7xl text-gold-light leading-[1.05] text-balance mb-8 animate-fade-in-up delay-200">
               A sanctuary of stone,<br className="hidden md:block" /> light, and quiet earth.
             </h1>
-            <p className="font-sans text-zinc-300/90 text-base md:text-lg max-w-[56ch] mx-auto text-pretty mb-14 leading-relaxed">
+            <p className="font-sans text-zinc-300/90 text-base md:text-lg max-w-[56ch] mx-auto text-pretty mb-14 leading-relaxed animate-fade-in-up delay-300">
               Welcome to Garen&rsquo;s Garden — a charming twenty-one room bed &amp; breakfast where
               comfort, warmth, and personalized service come together to make every guest feel at home.
             </p>
-            <div className="w-full aspect-[4/3] sm:aspect-[16/9] lg:aspect-[21/9] overflow-hidden ring-1 ring-gold/10 rounded-[min(1vw,12px)] max-h-[520px]">
+            <div className="w-full aspect-[4/3] sm:aspect-[16/9] lg:aspect-[21/9] overflow-hidden ring-1 ring-gold/10 rounded-[min(1vw,12px)] max-h-[520px] animate-scale-in delay-400">
               <img
                 src={heroCourtyard}
                 alt="Sun-drenched marble corridor overlooking Garen's Garden courtyard"
                 width={1920}
                 height={1080}
-                className="w-full h-full object-cover"
+                className="w-full h-full object-cover hover:scale-[1.03] transition-transform duration-700"
               />
             </div>
           </div>
@@ -57,7 +57,7 @@ function Index() {
           <div className="max-w-7xl mx-auto">
             <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
               {/* Large Feature: Executive Suite */}
-              <div className="md:col-span-2 md:row-span-2 group relative overflow-hidden bg-warm/10 ring-1 ring-gold/10 p-1">
+              <div className="md:col-span-2 md:row-span-2 group relative overflow-hidden bg-warm/10 ring-1 ring-gold/10 p-1 animate-fade-in-up delay-100 hover-lift">
                 <div className="relative h-[300px] md:h-[420px] lg:h-full lg:min-h-[420px]">
                   <img
                     src={roomExecutive}
@@ -84,7 +84,7 @@ function Index() {
               </div>
 
               {/* Amenities list */}
-              <div id="amenities" className="bg-warm/5 ring-1 ring-gold/10 p-5 sm:p-8 flex flex-col justify-between">
+              <div id="amenities" className="bg-warm/5 ring-1 ring-gold/10 p-5 sm:p-8 flex flex-col justify-between animate-fade-in-up delay-200 hover-lift">
                 <div>
                   <h4 className="font-serif text-xl text-gold mb-6">Refined Living</h4>
                   <ul className="space-y-4">
@@ -110,15 +110,15 @@ function Index() {
               </div>
 
               {/* Standard/Deluxe */}
-              <div className="bg-warm/5 ring-1 ring-gold/10 p-1 flex flex-col">
-                <div className="w-full aspect-[4/3] md:aspect-square overflow-hidden rounded-[8px] mb-2">
+              <div className="bg-warm/5 ring-1 ring-gold/10 p-1 flex flex-col animate-fade-in-up delay-300 hover-lift">
+                <div className="w-full aspect-[4/3] md:aspect-square overflow-hidden rounded-[8px] mb-2 group">
                   <img
                     src={roomDeluxe}
                     alt="Deluxe room at Garen's Garden"
                     loading="lazy"
                     width={800}
                     height={800}
-                    className="w-full h-full object-cover"
+                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-750"
                   />
                 </div>
                 <div className="p-5">
@@ -132,15 +132,15 @@ function Index() {
               </div>
 
               {/* Gallery Preview: Dining */}
-              <div className="md:col-span-1 bg-warm/10 ring-1 ring-gold/10 p-1">
-                <div className="relative w-full h-[240px] md:h-[300px] lg:h-full lg:min-h-[260px] overflow-hidden rounded-[8px]">
+              <div className="md:col-span-1 bg-warm/10 ring-1 ring-gold/10 p-1 animate-fade-in-up delay-300 hover-lift">
+                <div className="relative w-full h-[240px] md:h-[300px] lg:h-full lg:min-h-[260px] overflow-hidden rounded-[8px] group">
                   <img
                     src={loungeImg}
                     alt="Garen's Garden lounge"
                     loading="lazy"
                     width={800}
                     height={1000}
-                    className="w-full h-full object-cover mobile-blur"
+                    className="w-full h-full object-cover mobile-blur group-hover:scale-105 transition-transform duration-750"
                   />
                   <div className="absolute inset-0 bg-black/50" />
                   <div className="absolute inset-0 bg-gradient-to-t from-deep/70 via-transparent to-transparent" />
@@ -153,7 +153,7 @@ function Index() {
               </div>
 
               {/* Owner Hotline */}
-              <div className="md:col-span-1 bg-gold text-deep p-5 sm:p-8 flex flex-col justify-between">
+              <div className="md:col-span-1 bg-gold text-deep p-5 sm:p-8 flex flex-col justify-between animate-fade-in-up delay-400 hover-lift">
                 <p className="font-serif text-lg italic leading-relaxed text-pretty">
                   &ldquo;Every stay is more than a visit — it&rsquo;s part of our story.&rdquo;
                 </p>
@@ -171,14 +171,14 @@ function Index() {
         {/* About / Story */}
         <section id="story" className="px-4 sm:px-6 py-20 md:py-32 border-t border-gold/10">
           <div className="max-w-7xl mx-auto grid md:grid-cols-2 gap-16 items-center">
-            <div className="w-full aspect-[4/3] md:aspect-[4/5] overflow-hidden rounded-[4px] ring-1 ring-gold/10 order-2 md:order-1 max-h-[620px]">
+            <div className="w-full aspect-[4/3] md:aspect-[4/5] overflow-hidden rounded-[4px] ring-1 ring-gold/10 order-2 md:order-1 max-h-[620px] group">
               <img
                 src={gardenImg}
                 alt="The garden courtyard at Garen's Garden"
                 loading="lazy"
                 width={800}
                 height={1000}
-                className="w-full h-full object-cover"
+                className="w-full h-full object-cover group-hover:scale-[1.02] transition-transform duration-700"
               />
             </div>
             <div className="max-w-[52ch] order-1 md:order-2">
@@ -303,13 +303,13 @@ function Index() {
             <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
               <Link
                 to="/rooms"
-                className="bg-gold text-deep px-8 py-4 text-xs uppercase tracking-[0.25em] font-semibold hover:bg-gold-light transition-colors"
+                className="bg-gold text-deep px-8 py-4 text-xs uppercase tracking-[0.25em] font-semibold hover:bg-gold-light transition-all active:scale-95 duration-300 shadow-md hover:shadow-gold/10 hover-lift"
               >
                 View Rooms &amp; Rates
               </Link>
               <Link
                 to="/contact"
-                className="border border-gold/40 text-gold-light px-8 py-4 text-xs uppercase tracking-[0.25em] font-semibold hover:border-gold hover:text-gold transition-colors"
+                className="border border-gold/40 text-gold-light px-8 py-4 text-xs uppercase tracking-[0.25em] font-semibold hover:border-gold hover:text-gold transition-all active:scale-95 duration-300 hover-glow"
               >
                 Message the Owner
               </Link>

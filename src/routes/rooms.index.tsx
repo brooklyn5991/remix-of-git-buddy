@@ -50,7 +50,7 @@ function RoomsPage() {
     <div className="bg-deep font-sans text-gold-light min-h-screen antialiased">
       <SiteNav />
       <main className="pt-24 pb-24 md:pb-32 overflow-x-hidden">
-        <section className="px-4 sm:px-6 py-12 md:py-16 max-w-7xl mx-auto">
+        <section className="px-4 sm:px-6 py-12 md:py-16 max-w-7xl mx-auto animate-fade-in-up">
           <p className="text-[10px] uppercase tracking-[0.4em] text-gold mb-6">Rooms & Availability</p>
           <h1 className="font-serif text-4xl sm:text-5xl md:text-6xl text-gold-light leading-tight mb-6 max-w-3xl">
             Twenty-one rooms. Pick yours.
@@ -61,7 +61,7 @@ function RoomsPage() {
           </p>
         </section>
 
-        <section className="px-4 sm:px-6 max-w-7xl mx-auto mb-10">
+        <section className="px-4 sm:px-6 max-w-7xl mx-auto mb-10 animate-fade-in-up delay-100 hover-glow">
           <div className="bg-warm/10 ring-1 ring-gold/20 p-6 grid md:grid-cols-4 gap-4 items-end">
             <div>
               <label className="block text-[10px] uppercase tracking-[0.3em] text-gold/70 mb-2">Check-in</label>
@@ -70,7 +70,7 @@ function RoomsPage() {
                 value={checkIn}
                 min={new Date().toISOString().slice(0, 10)}
                 onChange={(e) => setCheckIn(e.target.value)}
-                className="w-full bg-deep border border-gold/30 text-gold-light px-3 py-2 focus:border-gold outline-none"
+                className="w-full bg-deep border border-gold/30 text-gold-light px-3 py-2 focus:border-gold outline-none transition-colors"
               />
             </div>
             <div>
@@ -80,7 +80,7 @@ function RoomsPage() {
                 value={checkOut}
                 min={checkIn}
                 onChange={(e) => setCheckOut(e.target.value)}
-                className="w-full bg-deep border border-gold/30 text-gold-light px-3 py-2 focus:border-gold outline-none"
+                className="w-full bg-deep border border-gold/30 text-gold-light px-3 py-2 focus:border-gold outline-none transition-colors"
               />
             </div>
             <div>
@@ -88,7 +88,7 @@ function RoomsPage() {
               <select
                 value={tierFilter}
                 onChange={(e) => setTierFilter(e.target.value as typeof tierFilter)}
-                className="w-full bg-deep border border-gold/30 text-gold-light px-3 py-2 focus:border-gold outline-none"
+                className="w-full bg-deep border border-gold/30 text-gold-light px-3 py-2 focus:border-gold outline-none transition-colors"
               >
                 <option>All</option>
                 <option>Standard</option>
@@ -113,13 +113,14 @@ function RoomsPage() {
           {roomsQuery.isLoading ? (
             <p className="text-zinc-400 text-center py-20">Loading rooms…</p>
           ) : (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-              {filtered.map((room) => {
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 animate-scale-in delay-200">
+              {filtered.map((room, idx) => {
                 const booked = bookedSet.has(room.id);
                 return (
                   <article
                     key={room.id}
-                    className={`bg-warm/5 ring-1 ring-gold/10 p-1 flex flex-col group ${booked ? "opacity-40" : ""}`}
+                    className={`bg-warm/5 ring-1 ring-gold/10 p-1 flex flex-col group hover-lift animate-fade-in-up ${booked ? "opacity-40" : ""}`}
+                    style={{ animationDelay: `${(idx % 6 + 1) * 75}ms` }}
                   >
                     <div className="aspect-[16/10] sm:aspect-[4/3] overflow-hidden rounded-[6px] relative max-h-[260px] sm:max-h-none">
                       <img
@@ -157,7 +158,7 @@ function RoomsPage() {
                             to="/rooms/$slug"
                             params={{ slug: room.room_number }}
                             search={{ check_in: checkIn, check_out: checkOut }}
-                            className="text-[10px] uppercase tracking-[0.25em] text-gold-light border-b border-gold/40 hover:border-gold pb-1"
+                            className="text-[10px] uppercase tracking-[0.25em] text-gold-light border-b border-gold/40 hover:border-gold pb-1 transition-all"
                           >
                             Reserve →
                           </Link>
