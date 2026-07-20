@@ -27,7 +27,7 @@ function Index() {
             <img
               src={logoAsset.url}
               alt="Garen's Garden Hotel & Suite"
-              className="mx-auto mt-6 sm:mt-0 mb-8 sm:mb-10 w-full max-w-[280px] sm:max-w-md md:max-w-xl h-auto animate-fade-in"
+              className="mx-auto mt-6 sm:mt-0 mb-8 sm:mb-10 w-full max-w-[280px] sm:max-w-md md:max-w-xl h-auto animate-fade-in animate-float"
             />
             <p className="text-[10px] font-medium uppercase tracking-[0.4em] text-gold/70 mb-8 animate-fade-in-up delay-100">
               Reborn 2026 · 21 Rooms
@@ -95,8 +95,8 @@ function Index() {
                       { label: "Constant Hot Water", d: "M12 3c2.5 4 5 6.5 5 10a5 5 0 11-10 0c0-3.5 2.5-6 5-10z" },
                       { label: "Secure In-Compound Parking", d: "M5 13l4 4L19 7" },
                     ].map((item) => (
-                      <li key={item.label} className="flex items-center gap-3 text-zinc-300 text-sm">
-                        <svg className="size-4 text-gold/70 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <li key={item.label} className="amenity-row flex items-center gap-3 text-zinc-300 text-sm cursor-default">
+                        <svg className="amenity-icon size-4 text-gold/70 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                           <path d={item.d} strokeWidth={1.75} strokeLinecap="round" strokeLinejoin="round" />
                         </svg>
                         {item.label}
@@ -303,7 +303,7 @@ function Index() {
             <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
               <Link
                 to="/rooms"
-                className="bg-gold text-deep px-8 py-4 text-xs uppercase tracking-[0.25em] font-semibold hover:bg-gold-light transition-all active:scale-95 duration-300 shadow-md hover:shadow-gold/10 hover-lift"
+                className="shimmer-btn bg-gold text-deep px-8 py-4 text-xs uppercase tracking-[0.25em] font-semibold transition-all active:scale-95 duration-300 shadow-md hover:shadow-gold/20 hover-lift"
               >
                 View Rooms &amp; Rates
               </Link>

@@ -244,11 +244,11 @@
 .delay-500 { animation-delay: 500ms; }
 
 .hover-lift {
-  transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  transition: transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.4s ease;
 }
 .hover-lift:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 20px 40px -15px rgba(0, 0, 0, 0.4);
+  transform: translateY(-6px) rotate(-0.4deg);
+  box-shadow: 0 24px 45px -15px rgba(0, 0, 0, 0.5), 0 0 25px -10px rgba(201, 168, 76, 0.25);
 }
 
 .hover-glow {
@@ -257,6 +257,70 @@
 .hover-glow:hover {
   box-shadow: 0 0 15px rgba(201, 168, 76, 0.2);
   border-color: rgba(201, 168, 76, 0.5);
+}
+
+/* Playful additions */
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-8px); }
+}
+@keyframes wiggle {
+  0%, 100% { transform: rotate(0deg); }
+  25% { transform: rotate(-10deg); }
+  75% { transform: rotate(10deg); }
+}
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+@keyframes bounceIn {
+  0% { opacity: 0; transform: scale(0.85) translateY(20px); }
+  60% { opacity: 1; transform: scale(1.04) translateY(-4px); }
+  100% { opacity: 1; transform: scale(1) translateY(0); }
+}
+@keyframes pop {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.15) rotate(-4deg); }
+  100% { transform: scale(1); }
+}
+
+.animate-bounce-in {
+  opacity: 0;
+  animation: bounceIn 0.7s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+}
+.animate-float { animation: float 5s ease-in-out infinite; }
+
+.hover-tilt {
+  transition: transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.4s ease;
+}
+.hover-tilt:hover {
+  transform: perspective(900px) rotateX(3deg) rotateY(-5deg) translateY(-4px) scale(1.02);
+  box-shadow: 0 30px 50px -20px rgba(0, 0, 0, 0.6);
+}
+
+.hover-pop {
+  display: inline-block;
+  transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+.hover-pop:hover { animation: pop 0.5s ease; }
+
+.amenity-icon {
+  transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1), color 0.3s ease;
+  transform-origin: center;
+}
+li:hover > .amenity-icon {
+  animation: wiggle 0.55s ease;
+  color: var(--color-gold-light);
+}
+
+.shimmer-btn {
+  background-image: linear-gradient(90deg, var(--color-gold) 0%, var(--color-gold-light) 50%, var(--color-gold) 100%);
+  background-size: 200% 100%;
+  transition: background-position 0.6s ease, transform 0.3s ease;
+}
+.shimmer-btn:hover {
+  background-position: 100% 0;
+  animation: shimmer 1.8s linear infinite;
 }
 
 
