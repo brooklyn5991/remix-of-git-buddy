@@ -24,11 +24,13 @@ function Index() {
         {/* Hero */}
         <section className="px-4 sm:px-6 py-14 md:py-24 lg:py-28">
           <div className="max-w-5xl mx-auto text-center">
-            <img
-              src={logoAsset.url}
-              alt="Garen's Garden Hotel & Suite"
-              className="mx-auto mt-6 sm:mt-0 mb-8 sm:mb-10 w-full max-w-[280px] sm:max-w-md md:max-w-xl h-auto animate-fade-in animate-float"
-            />
+            <div className="animate-fade-in mx-auto mt-6 sm:mt-0 mb-8 sm:mb-10 w-full max-w-[280px] sm:max-w-md md:max-w-xl">
+              <img
+                src={logoAsset.url}
+                alt="Garen's Garden Hotel & Suite"
+                className="w-full h-auto animate-float"
+              />
+            </div>
             <p className="text-[10px] font-medium uppercase tracking-[0.4em] text-gold/70 mb-8 animate-fade-in-up delay-100">
               Reborn 2026 · 21 Rooms
             </p>
