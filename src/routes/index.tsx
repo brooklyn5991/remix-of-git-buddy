@@ -303,7 +303,7 @@ function Index() {
             <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
               <Link
                 to="/rooms"
-                className="bg-gold text-deep px-8 py-4 text-xs uppercase tracking-[0.25em] font-semibold hover:bg-gold-light transition-all active:scale-95 duration-300 shadow-md hover:shadow-gold/10 hover-lift"
+                className="shimmer-btn bg-gold text-deep px-8 py-4 text-xs uppercase tracking-[0.25em] font-semibold transition-all active:scale-95 duration-300 shadow-md hover:shadow-gold/20 hover-lift"
               >
                 View Rooms &amp; Rates
               </Link>
