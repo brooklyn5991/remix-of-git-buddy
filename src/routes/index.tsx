@@ -27,7 +27,7 @@ function Index() {
             <img
               src={logoAsset.url}
               alt="Garen's Garden Hotel & Suite"
-              className="mx-auto mt-6 sm:mt-0 mb-8 sm:mb-10 w-full max-w-[280px] sm:max-w-md md:max-w-xl h-auto animate-fade-in"
+              className="mx-auto mt-6 sm:mt-0 mb-8 sm:mb-10 w-full max-w-[280px] sm:max-w-md md:max-w-xl h-auto animate-fade-in animate-float"
             />
             <p className="text-[10px] font-medium uppercase tracking-[0.4em] text-gold/70 mb-8 animate-fade-in-up delay-100">
               Reborn 2026 · 21 Rooms
