@@ -95,8 +95,8 @@ function Index() {
                       { label: "Constant Hot Water", d: "M12 3c2.5 4 5 6.5 5 10a5 5 0 11-10 0c0-3.5 2.5-6 5-10z" },
                       { label: "Secure In-Compound Parking", d: "M5 13l4 4L19 7" },
                     ].map((item) => (
-                      <li key={item.label} className="flex items-center gap-3 text-zinc-300 text-sm">
-                        <svg className="size-4 text-gold/70 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <li key={item.label} className="amenity-row flex items-center gap-3 text-zinc-300 text-sm cursor-default">
+                        <svg className="amenity-icon size-4 text-gold/70 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                           <path d={item.d} strokeWidth={1.75} strokeLinecap="round" strokeLinejoin="round" />
                         </svg>
                         {item.label}
