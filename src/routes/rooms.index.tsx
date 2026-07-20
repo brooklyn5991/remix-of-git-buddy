@@ -119,7 +119,7 @@ function RoomsPage() {
                 return (
                   <article
                     key={room.id}
-                    className={`bg-warm/5 ring-1 ring-gold/10 p-1 flex flex-col group hover-lift animate-fade-in-up ${booked ? "opacity-40" : ""}`}
+                    className={`bg-warm/5 ring-1 ring-gold/10 p-1 flex flex-col group hover-tilt animate-bounce-in ${booked ? "opacity-40" : ""}`}
                     style={{ animationDelay: `${(idx % 6 + 1) * 75}ms` }}
                   >
                     <div className="aspect-[16/10] sm:aspect-[4/3] overflow-hidden rounded-[6px] relative max-h-[260px] sm:max-h-none">
