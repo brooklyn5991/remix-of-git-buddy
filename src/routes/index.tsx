@@ -32,7 +32,7 @@ function Index() {
               />
             </div>
             <p className="text-[10px] font-medium uppercase tracking-[0.4em] text-gold/70 mb-8 animate-fade-in-up delay-100">
-              Reborn 2026 · 21 Rooms
+              Reborn 2026
             </p>
 
             <h1 className="font-serif text-4xl sm:text-5xl md:text-7xl text-gold-light leading-[1.05] text-balance mb-8 animate-fade-in-up delay-200">
@@ -190,7 +190,7 @@ function Index() {
               </h2>
               <div className="space-y-6 text-zinc-300/90 leading-relaxed">
                 <p>
-                  Garen&rsquo;s Garden is a charming 21-room bed &amp; breakfast reborn in 2026 with a
+                  Garen&rsquo;s Garden is Obiaruku&rsquo;s finest bed &amp; breakfast reborn in 2026 with a
                   fresh vision of hospitality. Our mission is simple yet profound: to create a haven
                   where comfort, warmth, and personalized service make every guest feel at home.
                 </p>
@@ -268,7 +268,7 @@ function Index() {
                 {
                   title: "The Estate",
                   items: [
-                    "21 rooms across two floors",
+                    "Rooms across two floors",
                     "Ground floor · Rooms 101 – 108",
                     "First floor · Rooms 201 – 213",
                     "Standard · Deluxe · Executive",

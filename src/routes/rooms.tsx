@@ -7,10 +7,10 @@ export const Route = createFileRoute("/rooms")({
       {
         name: "description",
         content:
-          "All 21 rooms at Garen's Garden — Standard, Deluxe, and our Executive Suite. Live availability, pick your room and reserve.",
+          "Rooms at Garen's Garden — Standard, Deluxe, and our Executive Suite. Live availability, pick your room and reserve.",
       },
       { property: "og:title", content: "Rooms & Availability — Garen's Garden" },
-      { property: "og:description", content: "21 rooms. Live availability. Reserve your room directly." },
+      { property: "og:description", content: "Live availability. Reserve your room directly." },
     ],
   }),
   component: RoomsLayout,

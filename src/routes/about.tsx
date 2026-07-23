@@ -11,7 +11,7 @@ export const Route = createFileRoute("/about")({
       {
         name: "description",
         content:
-          "Garen's Garden is a 21-room boutique bed & breakfast reborn in 2026. Our mission: to make every guest feel at home through warmth, care, and personalized service.",
+          "Garen's Garden is Obiaruku's finest boutique bed & breakfast reborn in 2026. Our mission: to make every guest feel at home through warmth, care, and personalized service.",
       },
       { property: "og:title", content: "Our Story — Garen's Garden" },
       { property: "og:description", content: "Reborn 2026. A house well-kept." },
@@ -33,7 +33,7 @@ function AboutPage() {
             </h1>
             <div className="space-y-6 text-zinc-300/90 leading-relaxed">
               <p>
-                Garen&rsquo;s Garden is a charming 21-room bed &amp; breakfast reborn in 2026 with a
+                Garen&rsquo;s Garden is Obiaruku&rsquo;s finest bed &amp; breakfast reborn in 2026 with a
                 fresh vision of hospitality. Our mission is simple yet profound: to create a haven
                 where comfort, warmth, and personalized service make every guest feel at home.
               </p>
@@ -50,11 +50,10 @@ function AboutPage() {
         </section>
 
         <section className="px-4 sm:px-6 py-14 md:py-20 border-t border-gold/10">
-          <div className="max-w-7xl mx-auto grid md:grid-cols-3 gap-10">
+          <div className="max-w-7xl mx-auto grid md:grid-cols-2 gap-10">
             {[
-              { n: "21", l: "Rooms across two floors", d: "delay-100" },
-              { n: "2026", l: "The year we were reborn", d: "delay-200" },
-              { n: "24/7", l: "Solar autonomy & security", d: "delay-300" },
+              { n: "2026", l: "The year we were reborn", d: "delay-100" },
+              { n: "24/7", l: "Solar autonomy & security", d: "delay-200" },
             ].map((s) => (
               <div key={s.l} className={`border-t border-gold/20 pt-6 animate-fade-in-up ${s.d}`}>
                 <p className="font-serif text-5xl md:text-6xl text-gold mb-2">{s.n}</p>
@@ -78,7 +77,7 @@ function AboutPage() {
               part of a story we&rsquo;re still writing. If something isn&rsquo;t right, or if there
               is something we can do better, the owner&rsquo;s hotline reaches me directly.
             </p>
-            <p className="text-[10px] uppercase tracking-[0.25em] text-gold">— Mrs Rosemary, Proprietor</p>
+            <p className="text-[10px] uppercase tracking-[0.25em] text-gold">— Proprietor</p>
           </div>
         </section>
       </main>
