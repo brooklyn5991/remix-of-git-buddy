@@ -9,7 +9,7 @@ export function SiteFooter() {
             Garen&rsquo;s Garden
           </span>
           <p className="text-zinc-400/80 text-sm leading-relaxed max-w-xs">
-            A 21-room boutique bed &amp; breakfast. Reborn 2026. Where every stay is part of our
+            Obiaruku&rsquo;s finest bed &amp; breakfast. Reborn 2026. Where every stay is part of our
             story.
           </p>
         </div>
