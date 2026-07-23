@@ -39,7 +39,7 @@ function Index() {
               A sanctuary of stone,<br className="hidden md:block" /> light, and quiet earth.
             </h1>
             <p className="font-sans text-zinc-300/90 text-base md:text-lg max-w-[56ch] mx-auto text-pretty mb-14 leading-relaxed animate-fade-in-up delay-300">
-              Welcome to Garen&rsquo;s Garden — a charming twenty-one room bed &amp; breakfast where
+              Welcome to Garen&rsquo;s Garden — Obiaruku&rsquo;s finest room bed &amp; breakfast where
               comfort, warmth, and personalized service come together to make every guest feel at home.
             </p>
             <div className="w-full aspect-[4/3] sm:aspect-[16/9] lg:aspect-[21/9] overflow-hidden ring-1 ring-gold/10 rounded-[min(1vw,12px)] max-h-[520px] animate-scale-in delay-400">
