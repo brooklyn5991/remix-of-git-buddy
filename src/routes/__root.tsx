@@ -87,7 +87,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       {
         name: "description",
         content:
-          "Garen's Garden is a 21-room boutique bed & breakfast reborn in 2026. Complimentary breakfast, 24/7 solar power, secure premises, and warm, personalized hospitality.",
+          "Garen's Garden is Obiaruku's finest boutique bed & breakfast reborn in 2026. Complimentary breakfast, 24/7 solar power, secure premises, and warm, personalized hospitality.",
       },
       { name: "author", content: "Garen's Garden" },
       { name: "theme-color", content: "#0b0b0b" },
@@ -98,12 +98,12 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       {
         property: "og:description",
         content:
-          "Garen's Garden is a 21-room boutique bed & breakfast reborn in 2026. Complimentary breakfast, 24/7 solar power, secure premises, and warm, personalized hospitality.",
+          "Garen's Garden is Obiaruku's finest boutique bed & breakfast reborn in 2026. Complimentary breakfast, 24/7 solar power, secure premises, and warm, personalized hospitality.",
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
       { name: "twitter:title", content: "Garen's Garden — A Reborn Boutique Bed & Breakfast" },
-      { name: "twitter:description", content: "Garen's Garden is a 21-room boutique bed & breakfast reborn in 2026. Complimentary breakfast, 24/7 solar power, secure premises, and warm, personalized hospitality." },
+      { name: "twitter:description", content: "Garen's Garden is Obiaruku's finest boutique bed & breakfast reborn in 2026. Complimentary breakfast, 24/7 solar power, secure premises, and warm, personalized hospitality." },
       { property: "og:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/354f4698-456c-4f12-8508-8210c7f0b478/id-preview-0371f586--7f8ad589-8bee-4fb9-b24d-c4e825c170d3.lovable.app-1784029420287.png" },
       { name: "twitter:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/354f4698-456c-4f12-8508-8210c7f0b478/id-preview-0371f586--7f8ad589-8bee-4fb9-b24d-c4e825c170d3.lovable.app-1784029420287.png" },
     ],

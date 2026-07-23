@@ -9,7 +9,7 @@ export function SiteFooter() {
             Garen&rsquo;s Garden
           </span>
           <p className="text-zinc-400/80 text-sm leading-relaxed max-w-xs">
-            A 21-room boutique bed &amp; breakfast. Reborn 2026. Where every stay is part of our
+            Obiaruku&rsquo;s finest bed &amp; breakfast. Reborn 2026. Where every stay is part of our
             story.
           </p>
         </div>
@@ -29,7 +29,7 @@ export function SiteFooter() {
       </div>
       <div className="max-w-7xl mx-auto mt-12 pt-8 border-t border-gold/10 text-[10px] uppercase tracking-[0.25em] text-zinc-500 flex flex-col md:flex-row justify-between gap-2">
         <span>© {new Date().getFullYear()} Garen&rsquo;s Garden</span>
-        <span>Reborn 2026 · 21 Rooms</span>
+        <span>Reborn 2026</span>
       </div>
     </footer>
   );
