@@ -87,7 +87,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       {
         name: "description",
         content:
-          "Garen's Garden is a 21-room boutique bed & breakfast reborn in 2026. Complimentary breakfast, 24/7 solar power, secure premises, and warm, personalized hospitality.",
+          "Garen's Garden is Obiaruku's finest boutique bed & breakfast reborn in 2026. Complimentary breakfast, 24/7 solar power, secure premises, and warm, personalized hospitality.",
       },
       { name: "author", content: "Garen's Garden" },
       { name: "theme-color", content: "#0b0b0b" },
