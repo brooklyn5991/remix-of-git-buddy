@@ -7,7 +7,7 @@ import roomDeluxe from "@/assets/room-deluxe.jpg";
 import diningImg from "@/assets/dining.jpeg";
 import loungeImg from "@/assets/bar.jpg";
 import gardenImg from "@/assets/garden.jpg";
-import logoAsset from "@/assets/garens-garden-logo.jpeg.asset.json";
+
 
 
 export const Route = createFileRoute("/")({
@@ -26,7 +26,7 @@ function Index() {
           <div className="max-w-5xl mx-auto text-center">
             <div className="animate-fade-in mx-auto mt-6 sm:mt-0 mb-8 sm:mb-10 w-full max-w-[280px] sm:max-w-md md:max-w-xl">
               <img
-                src={logoAsset.url}
+                src="/logo.jpeg"
                 alt="Garen's Garden Hotel & Suite"
                 className="w-full h-auto animate-float"
               />
