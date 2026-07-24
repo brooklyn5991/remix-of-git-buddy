@@ -3,10 +3,12 @@ import { useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { z } from "zod";
+import PaystackPop from "@paystack/inline-js";
 import { SiteNav } from "@/components/site-nav";
 import { SiteFooter } from "@/components/site-footer";
-import { createReservationByTier, listRooms, getBookedRoomIds, settleFakePayment, verifySquadPayment } from "@/lib/hotel.functions";
+import { createReservationByTier, listRooms, getBookedRoomIds, verifyPaystackPayment } from "@/lib/hotel.functions";
 import { roomImage } from "@/lib/room-images";
+import { openBookingNotifications } from "@/lib/booking-notify";
 
 const currency = (n: number) =>
   new Intl.NumberFormat("en-NG", { style: "currency", currency: "NGN", maximumFractionDigits: 0 }).format(n);
@@ -32,7 +34,7 @@ export const Route = createFileRoute("/book/$tier")({
     return {
       meta: [
         { title: `Book ${title} — Garen's Garden` },
-        { name: "description", content: `Reserve a ${title} room at Garen's Garden. We'll assign the next available room for your dates.` },
+        { name: "description", content: `Reserve a ${title} room at Garen's Garden.` },
         { property: "og:title", content: `Book ${title} — Garen's Garden` },
         { property: "og:description", content: `Reserve a ${title} room at Garen's Garden.` },
       ],
@@ -52,8 +54,7 @@ function BookTier() {
   const fetchRooms = useServerFn(listRooms);
   const fetchBooked = useServerFn(getBookedRoomIds);
   const reserve = useServerFn(createReservationByTier);
-  const settle = useServerFn(settleFakePayment);
-  const verify = useServerFn(verifySquadPayment);
+  const verifyPaystack = useServerFn(verifyPaystackPayment);
 
   const [checkIn, setCheckIn] = useState(search.check_in || today());
   const [checkOut, setCheckOut] = useState(search.check_out || tomorrow());
@@ -61,6 +62,7 @@ function BookTier() {
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
   const [payError, setPayError] = useState<string | null>(null);
+  const [processing, setProcessing] = useState(false);
 
   const roomsQuery = useQuery({ queryKey: ["rooms"], queryFn: () => fetchRooms() });
   const bookedQuery = useQuery({
@@ -93,48 +95,48 @@ function BookTier() {
     }) => reserve({ data: payload }),
     onSuccess: async (res) => {
       setPayError(null);
-      const pk = import.meta.env.VITE_SQUAD_PUBLIC_KEY as string | undefined;
-      const isPlaceholder = !pk || pk.includes("yoursquadkeyhere") || pk.startsWith("sandbox_");
-      if (isPlaceholder) {
-        try {
-          await settle({ data: { reservation_id: res.id, outcome: "paid" } });
-          await navigate({ to: "/reservation/$id", params: { id: res.id }, search: { paid: 1 } });
-        } catch (err) {
-          setPayError("Automatic settlement failed: " + (err as Error).message);
-        }
+      const pk = import.meta.env.VITE_PAYSTACK_PUBLIC_KEY as string | undefined;
+      if (!pk) {
+        setPayError("Payment is not configured. Please contact the hotel.");
         return;
       }
-      // Real Squadco flow (mirrors rooms/$slug)
-      const loadSquad = () =>
-        new Promise<void>((resolve, reject) => {
-          if ((window as unknown as { squad?: unknown }).squad) return resolve();
-          const s = document.createElement("script");
-          s.src = "https://checkout.squadco.com/widget/squad.min.js";
-          s.onload = () => resolve();
-          s.onerror = () => reject(new Error("Failed to load payment widget"));
-          document.body.appendChild(s);
-        });
       try {
-        await loadSquad();
-        const instance = new (window as unknown as { squad: new (o: unknown) => { setup: () => void; open: () => void } }).squad({
-          onClose: () => setPayError("Payment cancelled. Try again to confirm."),
-          onSuccess: async (tx: { transaction_ref: string }) => {
+        const paystack = new PaystackPop();
+        setProcessing(true);
+        paystack.newTransaction({
+          key: pk,
+          email,
+          amount: res.total_ngn * 100, // kobo
+          currency: "NGN",
+          metadata: {
+            guest_name: name,
+            whatsapp_phone: phone,
+            room_category: tierName,
+            reservation_id: res.id,
+            confirmation_code: res.confirmation_code,
+          },
+          onSuccess: async (tx) => {
             try {
-              await verify({ data: { reservation_id: res.id, reference: tx.transaction_ref } });
+              const verified = await verifyPaystack({ data: { reservation_id: res.id, reference: tx.reference } });
+              openBookingNotifications(verified.reservation);
               navigate({ to: "/reservation/$id", params: { id: res.id }, search: { paid: 1 } });
             } catch (err) {
               setPayError((err as Error).message);
+            } finally {
+              setProcessing(false);
             }
           },
-          onFailure: (err: { message?: string }) => setPayError(err?.message || "Payment failed."),
-          public_key: pk,
-          amount: res.total_ngn * 100,
-          currency_code: "NGN",
-          email,
+          onCancel: () => {
+            setProcessing(false);
+            setPayError("Payment cancelled. Try again to confirm.");
+          },
+          onError: (err) => {
+            setProcessing(false);
+            setPayError((err as Error)?.message || "Payment failed.");
+          },
         });
-        instance.setup();
-        instance.open();
       } catch (err) {
+        setProcessing(false);
         setPayError((err as Error).message);
       }
     },
@@ -247,9 +249,15 @@ function BookTier() {
                         className="w-full bg-deep border border-gold/30 text-gold-light px-3 py-2 focus:border-gold outline-none" />
                     </div>
                     <div>
-                      <label className="block text-[10px] uppercase tracking-[0.3em] text-gold/70 mb-2">Phone</label>
-                      <input required value={phone} onChange={(e) => setPhone(e.target.value)}
-                        className="w-full bg-deep border border-gold/30 text-gold-light px-3 py-2 focus:border-gold outline-none" />
+                      <label className="block text-[10px] uppercase tracking-[0.3em] text-gold/70 mb-2">WhatsApp Contact Number</label>
+                      <input
+                        required
+                        type="tel"
+                        placeholder="e.g. 08103129471"
+                        value={phone}
+                        onChange={(e) => setPhone(e.target.value)}
+                        className="w-full bg-deep border border-gold/30 text-gold-light px-3 py-2 focus:border-gold outline-none"
+                      />
                     </div>
                   </div>
 
@@ -263,10 +271,10 @@ function BookTier() {
                     </div>
                     <button
                       type="submit"
-                      disabled={mutation.isPending}
+                      disabled={mutation.isPending || processing}
                       className="text-[11px] uppercase tracking-[0.3em] text-deep bg-gold hover:bg-gold-light disabled:opacity-50 px-6 py-3 transition-colors"
                     >
-                      {mutation.isPending ? "Reserving…" : "Reserve & Pay"}
+                      {processing ? "Processing…" : mutation.isPending ? "Reserving…" : "Reserve & Pay"}
                     </button>
                   </div>
 

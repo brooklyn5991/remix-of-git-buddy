@@ -1,0 +1,1 @@
+UPDATE public.rooms SET price_ngn = 100;

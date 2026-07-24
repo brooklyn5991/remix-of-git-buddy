@@ -3,11 +3,12 @@ import { useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { z } from "zod";
+import PaystackPop from "@paystack/inline-js";
 import { SiteNav } from "@/components/site-nav";
 import { SiteFooter } from "@/components/site-footer";
-import { listRooms, createOnlineReservation, getBookedRoomIds, verifySquadPayment, settleFakePayment } from "@/lib/hotel.functions";
+import { listRooms, createOnlineReservation, getBookedRoomIds, verifyPaystackPayment } from "@/lib/hotel.functions";
 import { roomImage } from "@/lib/room-images";
-
+import { openBookingNotifications } from "@/lib/booking-notify";
 
 const currency = (n: number) =>
   new Intl.NumberFormat("en-NG", { style: "currency", currency: "NGN", maximumFractionDigits: 0 }).format(n);
@@ -35,13 +36,12 @@ function RoomDetail() {
   const fetchRooms = useServerFn(listRooms);
   const fetchBooked = useServerFn(getBookedRoomIds);
   const reserve = useServerFn(createOnlineReservation);
+  const verifyPaystack = useServerFn(verifyPaystackPayment);
 
   const roomsQuery = useQuery({ queryKey: ["rooms"], queryFn: () => fetchRooms() });
   const room = (roomsQuery.data ?? []).find((r) => r.room_number === slug);
 
-  const today = () => {
-    return new Date().toISOString().slice(0, 10);
-  };
+  const today = () => new Date().toISOString().slice(0, 10);
   const tomorrow = () => {
     const d = new Date();
     d.setDate(d.getDate() + 1);
@@ -53,17 +53,14 @@ function RoomDetail() {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
+  const [payError, setPayError] = useState<string | null>(null);
+  const [processing, setProcessing] = useState(false);
 
   const bookedQuery = useQuery({
     queryKey: ["booked", checkIn, checkOut],
     queryFn: () => fetchBooked({ data: { check_in: checkIn, check_out: checkOut } }),
     enabled: !!checkIn && !!checkOut && checkOut > checkIn,
   });
-
-  const verify = useServerFn(verifySquadPayment);
-  const settle = useServerFn(settleFakePayment);
-  const [payError, setPayError] = useState<string | null>(null);
-  const [verifying, setVerifying] = useState(false);
 
   const mutation = useMutation({
     mutationFn: (data: {
@@ -75,87 +72,53 @@ function RoomDetail() {
       check_out: string;
     }) => reserve({ data }),
     onSuccess: async (res) => {
-      console.log("Mutation succeeded! Reservation response:", res);
       setPayError(null);
-      const pk = import.meta.env.VITE_SQUAD_PUBLIC_KEY as string | undefined;
-      console.log("Squadco Public Key (pk):", pk);
-      const isPlaceholder = !pk || pk.includes("yoursquadkeyhere") || pk.startsWith("sandbox_");
-      console.log("isPlaceholder evaluated to:", isPlaceholder);
-
-      if (isPlaceholder) {
-        console.log("Placeholder/Sandbox key detected. Simulating successful checkout immediately...");
-        try {
-          setVerifying(true);
-          await settle({ data: { reservation_id: res.id, outcome: "paid" } });
-          await navigate({ to: "/reservation/$id", params: { id: res.id }, search: { paid: 1 } });
-          console.log("Navigation to reservation page completed.");
-        } catch (err) {
-          console.error("Automatic settlement failed:", err);
-          setPayError("Automatic settlement failed: " + (err as Error).message);
-        } finally {
-          setVerifying(false);
-        }
+      const pk = import.meta.env.VITE_PAYSTACK_PUBLIC_KEY as string | undefined;
+      if (!pk) {
+        setPayError("Payment is not configured. Please contact the hotel.");
         return;
       }
-
-      console.log("Real key detected, loading Squadco inline script...");
-      // Load Squadco inline script dynamically
-      const loadSquad = () => {
-        return new Promise<void>((resolve, reject) => {
-          if ((window as any).squad) {
-            resolve();
-            return;
-          }
-          const script = document.createElement("script");
-          script.src = "https://checkout.squadco.com/widget/squad.min.js";
-          script.onload = () => resolve();
-          script.onerror = () => reject(new Error("Failed to load Squadco payment widget"));
-          document.body.appendChild(script);
-        });
-      };
-
       try {
-        await loadSquad();
-        console.log("Squadco script loaded. Opening widget...");
-        const squadInstance = new (window as any).squad({
-          onClose: () => {
-            console.log("Squadco widget closed by user.");
-            setPayError("Payment cancelled. Your reservation is still pending — try again to confirm.");
+        const paystack = new PaystackPop();
+        setProcessing(true);
+        paystack.newTransaction({
+          key: pk,
+          email,
+          amount: res.total_ngn * 100,
+          currency: "NGN",
+          metadata: {
+            guest_name: name,
+            whatsapp_phone: phone,
+            room_category: room?.tier,
+            reservation_id: res.id,
+            confirmation_code: res.confirmation_code,
           },
-          onLoad: () => {
-            console.log("Squadco widget loaded successfully.");
-          },
-          onSuccess: async (tx: any) => {
-            console.log("Squadco payment success callback:", tx);
+          onSuccess: async (tx) => {
             try {
-              setVerifying(true);
-              await verify({ data: { reservation_id: res.id, reference: tx.transaction_ref } });
+              const verified = await verifyPaystack({ data: { reservation_id: res.id, reference: tx.reference } });
+              openBookingNotifications(verified.reservation);
               navigate({ to: "/reservation/$id", params: { id: res.id }, search: { paid: 1 } });
             } catch (err) {
-              console.error("Verification failed:", err);
               setPayError((err as Error).message);
             } finally {
-              setVerifying(false);
+              setProcessing(false);
             }
           },
-          onFailure: (err: any) => {
-            console.error("Squadco widget failure:", err);
-            setPayError(err?.message || "Payment failed.");
+          onCancel: () => {
+            setProcessing(false);
+            setPayError("Payment cancelled. Your reservation is still pending — try again to confirm.");
           },
-          public_key: pk,
-          amount: res.total_ngn * 100, // in kobo
-          currency_code: "NGN",
-          email: email,
+          onError: (err) => {
+            setProcessing(false);
+            setPayError((err as Error)?.message || "Payment failed.");
+          },
         });
-        squadInstance.setup();
-        squadInstance.open();
       } catch (err) {
-        console.error("Squadco integration error:", err);
+        setProcessing(false);
         setPayError((err as Error).message);
       }
     },
   });
-
 
   if (roomsQuery.isLoading) {
     return (
@@ -226,111 +189,105 @@ function RoomDetail() {
               </ul>
             </div>
 
-            {/* Booking form */}
             <div className="bg-warm/10 ring-1 ring-gold/20 p-4 sm:p-6">
-              {false ? null : (
-
-                <form
-                  onSubmit={(e) => {
-                    e.preventDefault();
-                    if (!room) return;
-                    mutation.mutate({
-                      room_id: room.id,
-                      guest_name: name,
-                      guest_email: email,
-                      guest_phone: phone,
-                      check_in: checkIn,
-                      check_out: checkOut,
-                    });
-                  }}
-                  className="space-y-4"
-                >
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                    <div>
-                      <label className="block text-[10px] uppercase tracking-[0.3em] text-gold/70 mb-2">
-                        Check-in
-                      </label>
-                      <input
-                        type="date"
-                        value={checkIn}
-                        min={new Date().toISOString().slice(0, 10)}
-                        onChange={(e) => setCheckIn(e.target.value)}
-                        required
-                        className="w-full bg-deep border border-gold/30 text-gold-light px-3 py-2 focus:border-gold outline-none"
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-[10px] uppercase tracking-[0.3em] text-gold/70 mb-2">
-                        Check-out
-                      </label>
-                      <input
-                        type="date"
-                        value={checkOut}
-                        min={checkIn}
-                        onChange={(e) => setCheckOut(e.target.value)}
-                        required
-                        className="w-full bg-deep border border-gold/30 text-gold-light px-3 py-2 focus:border-gold outline-none"
-                      />
-                    </div>
+              <form
+                onSubmit={(e) => {
+                  e.preventDefault();
+                  if (!room) return;
+                  mutation.mutate({
+                    room_id: room.id,
+                    guest_name: name,
+                    guest_email: email,
+                    guest_phone: phone,
+                    check_in: checkIn,
+                    check_out: checkOut,
+                  });
+                }}
+                className="space-y-4"
+              >
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  <div>
+                    <label className="block text-[10px] uppercase tracking-[0.3em] text-gold/70 mb-2">Check-in</label>
+                    <input
+                      type="date"
+                      value={checkIn}
+                      min={new Date().toISOString().slice(0, 10)}
+                      onChange={(e) => setCheckIn(e.target.value)}
+                      required
+                      className="w-full bg-deep border border-gold/30 text-gold-light px-3 py-2 focus:border-gold outline-none"
+                    />
                   </div>
-                  <input
-                    type="text"
-                    placeholder="Full name"
-                    value={name}
-                    onChange={(e) => setName(e.target.value)}
-                    required
-                    className="w-full bg-deep border border-gold/30 text-gold-light px-3 py-2 focus:border-gold outline-none"
-                  />
-                  <input
-                    type="email"
-                    placeholder="Email"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    required
-                    className="w-full bg-deep border border-gold/30 text-gold-light px-3 py-2 focus:border-gold outline-none"
-                  />
+                  <div>
+                    <label className="block text-[10px] uppercase tracking-[0.3em] text-gold/70 mb-2">Check-out</label>
+                    <input
+                      type="date"
+                      value={checkOut}
+                      min={checkIn}
+                      onChange={(e) => setCheckOut(e.target.value)}
+                      required
+                      className="w-full bg-deep border border-gold/30 text-gold-light px-3 py-2 focus:border-gold outline-none"
+                    />
+                  </div>
+                </div>
+                <input
+                  type="text"
+                  placeholder="Full name"
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  required
+                  className="w-full bg-deep border border-gold/30 text-gold-light px-3 py-2 focus:border-gold outline-none"
+                />
+                <input
+                  type="email"
+                  placeholder="Email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  required
+                  className="w-full bg-deep border border-gold/30 text-gold-light px-3 py-2 focus:border-gold outline-none"
+                />
+                <div>
+                  <label className="block text-[10px] uppercase tracking-[0.3em] text-gold/70 mb-2">WhatsApp Contact Number</label>
                   <input
                     type="tel"
-                    placeholder="Phone number"
+                    placeholder="e.g. 08103129471"
                     value={phone}
                     onChange={(e) => setPhone(e.target.value)}
                     required
                     className="w-full bg-deep border border-gold/30 text-gold-light px-3 py-2 focus:border-gold outline-none"
                   />
+                </div>
 
-                  <div className="grid grid-cols-1 sm:grid-cols-[minmax(0,1fr)_auto] gap-4 sm:items-end pt-4 border-t border-gold/10">
-                    <div>
-                      <p className="text-[10px] uppercase tracking-[0.2em] text-gold/60">
-                        {nights} night{nights !== 1 ? "s" : ""}
-                      </p>
-                      <p className="font-serif text-3xl text-gold">{currency(total)}</p>
-                    </div>
-                    <button
-                      type="submit"
-                      disabled={mutation.isPending || isBooked || verifying}
-                      className="bg-gold text-deep px-6 py-3 text-sm font-medium hover:bg-gold-light transition-colors disabled:opacity-40 disabled:cursor-not-allowed w-full sm:w-auto"
-                    >
-                      {isBooked
-                        ? "Unavailable for these dates"
-                        : verifying
-                          ? "Verifying payment…"
-                          : mutation.isPending
-                            ? "Opening Squadco…"
-                            : "Confirm & Pay →"}
-                    </button>
-                  </div>
-
-                  {(mutation.error || payError) && (
-                    <p className="text-sm text-red-300 pt-2">
-                      {payError ?? (mutation.error as Error).message}
+                <div className="grid grid-cols-1 sm:grid-cols-[minmax(0,1fr)_auto] gap-4 sm:items-end pt-4 border-t border-gold/10">
+                  <div>
+                    <p className="text-[10px] uppercase tracking-[0.2em] text-gold/60">
+                      {nights} night{nights !== 1 ? "s" : ""}
                     </p>
-                  )}
-                  <p className="text-xs text-zinc-400 pt-2">
-                    A secure Squadco popup or checkout page will open to complete payment. Your room is locked once payment succeeds.
-                  </p>
-                </form>
-              )}
+                    <p className="font-serif text-3xl text-gold">{currency(total)}</p>
+                  </div>
+                  <button
+                    type="submit"
+                    disabled={mutation.isPending || isBooked || processing}
+                    className="bg-gold text-deep px-6 py-3 text-sm font-medium hover:bg-gold-light transition-colors disabled:opacity-40 disabled:cursor-not-allowed w-full sm:w-auto"
+                  >
+                    {isBooked
+                      ? "Unavailable for these dates"
+                      : processing
+                        ? "Processing…"
+                        : mutation.isPending
+                          ? "Opening Paystack…"
+                          : "Confirm & Pay →"}
+                  </button>
+                </div>
 
+                {(mutation.error || payError) && (
+                  <p className="text-sm text-red-300 pt-2">
+                    {payError ?? (mutation.error as Error).message}
+                  </p>
+                )}
+                <p className="text-xs text-zinc-400 pt-2">
+                  A secure Paystack popup will open to complete your payment. Your room is locked once payment succeeds.
+                </p>
+              </form>
             </div>
           </div>
         </section>
