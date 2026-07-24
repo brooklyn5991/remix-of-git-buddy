@@ -6,7 +6,7 @@ import { z } from "zod";
 import PaystackPop from "@paystack/inline-js";
 import { SiteNav } from "@/components/site-nav";
 import { SiteFooter } from "@/components/site-footer";
-import { listRooms, createOnlineReservation, getBookedRoomIds, verifyPaystackPayment } from "@/lib/hotel.functions";
+import { listRooms, createOnlineReservation, getBookedRoomIds, verifyPaystackPayment, cancelPendingReservation } from "@/lib/hotel.functions";
 import { roomImage } from "@/lib/room-images";
 import { openBookingNotifications } from "@/lib/booking-notify";
 
