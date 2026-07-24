@@ -97,7 +97,8 @@ function BookTier() {
         throw new Error("Payment is not configured. Please contact the hotel.");
       }
 
-      return await new Promise<void>((resolve, reject) => {
+      try {
+        await new Promise<void>((resolve, reject) => {
         const paystack = new PaystackPop();
         setProcessing(true);
         paystack.newTransaction({
@@ -137,7 +138,11 @@ function BookTier() {
             reject(new Error((err as Error)?.message || "Payment failed. No room was reserved."));
           },
         });
-      });
+        });
+      } catch (err) {
+        setProcessing(false);
+        throw err;
+      }
     },
     onMutate: () => setPayError(null),
     onError: (err: Error) => setPayError(err.message),
