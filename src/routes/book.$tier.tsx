@@ -55,6 +55,7 @@ function BookTier() {
   const fetchBooked = useServerFn(getBookedRoomIds);
   const reserve = useServerFn(createReservationByTier);
   const verifyPaystack = useServerFn(verifyPaystackPayment);
+  const cancelPending = useServerFn(cancelPendingReservation);
 
   const [checkIn, setCheckIn] = useState(search.check_in || today());
   const [checkOut, setCheckOut] = useState(search.check_out || tomorrow());
