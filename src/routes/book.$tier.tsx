@@ -122,16 +122,19 @@ function BookTier() {
               openBookingNotifications(verified.reservation);
               navigate({ to: "/reservation/$id", params: { id: res.id }, search: { paid: 1 } });
             } catch (err) {
+              try { await cancelPending({ data: { reservation_id: res.id } }); } catch { /* ignore */ }
               setPayError((err as Error).message);
             } finally {
               setProcessing(false);
             }
           },
-          onCancel: () => {
+          onCancel: async () => {
+            try { await cancelPending({ data: { reservation_id: res.id } }); } catch { /* ignore */ }
             setProcessing(false);
-            setPayError("Payment cancelled. Try again to confirm.");
+            setPayError("Payment cancelled. The room hold has been released — try again to confirm.");
           },
-          onError: (err) => {
+          onError: async (err) => {
+            try { await cancelPending({ data: { reservation_id: res.id } }); } catch { /* ignore */ }
             setProcessing(false);
             setPayError((err as Error)?.message || "Payment failed.");
           },
