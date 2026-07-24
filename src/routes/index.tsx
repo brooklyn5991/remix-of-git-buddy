@@ -268,7 +268,7 @@ function Index() {
                 {
                   title: "The Estate",
                   items: [
-                    "Standard · Deluxe · Executive",
+                    "Standard · Deluxe · Executive · Suite",
                     "Secure in-compound parking",
                     "Estate security & CCTV",
                     "Landscaped garden courtyard",
