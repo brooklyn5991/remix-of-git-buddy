@@ -104,6 +104,87 @@ export const createOnlineReservation = createServerFn({ method: "POST" })
     };
   });
 
+// ---------------- Public: reserve next available room of a tier ----------------
+const tierBookingSchema = z.object({
+  tier: z.enum(["Standard", "Deluxe", "Executive"]),
+  guest_name: z.string().min(2).max(120),
+  guest_email: z.string().email(),
+  guest_phone: z.string().min(6).max(30),
+  check_in: z.string(),
+  check_out: z.string(),
+});
+export const createReservationByTier = createServerFn({ method: "POST" })
+  .inputValidator((d: unknown) => tierBookingSchema.parse(d))
+  .handler(async ({ data }) => {
+    if (new Date(data.check_out) <= new Date(data.check_in)) {
+      throw new Error("Check-out must be after check-in");
+    }
+    const sb = publicClient();
+    const { data: tierRooms, error: tErr } = await sb
+      .from("rooms")
+      .select("id, price_ngn, room_number, name")
+      .eq("tier", data.tier)
+      .eq("is_active", true)
+      .order("room_number", { ascending: true });
+    if (tErr) throw new Error(tErr.message);
+    if (!tierRooms || tierRooms.length === 0) throw new Error(`No ${data.tier} rooms configured.`);
+
+    const { data: overlaps, error: oErr } = await sb
+      .from("reservations")
+      .select("room_id")
+      .in("status", ["confirmed", "checked_in"])
+      .lt("check_in", data.check_out)
+      .gt("check_out", data.check_in);
+    if (oErr) throw new Error(oErr.message);
+    const bookedIds = new Set((overlaps ?? []).map((r) => r.room_id as string));
+
+    const available = tierRooms.filter((r) => !bookedIds.has(r.id));
+    if (available.length === 0) throw new Error(`All ${data.tier} rooms are sold out for those dates.`);
+
+    const nights = Math.ceil(
+      (new Date(data.check_out).getTime() - new Date(data.check_in).getTime()) / 86400000,
+    );
+
+    // Try each available room in order — DB exclusion constraint protects against races.
+    for (const room of available) {
+      const total = nights * room.price_ngn;
+      const { data: created, error } = await sb
+        .from("reservations")
+        .insert({
+          room_id: room.id,
+          guest_name: data.guest_name,
+          guest_email: data.guest_email,
+          guest_phone: data.guest_phone,
+          check_in: data.check_in,
+          check_out: data.check_out,
+          total_ngn: total,
+          source: "online",
+          status: "confirmed",
+          payment_status: "pending",
+        })
+        .select("id, confirmation_code, total_ngn, check_in, check_out")
+        .single();
+      if (!error && created) {
+        return {
+          id: created.id as string,
+          confirmation_code: created.confirmation_code as string,
+          total_ngn: created.total_ngn as number,
+          room_number: room.room_number as string,
+          room_name: room.name as string,
+          check_in: created.check_in as string,
+          check_out: created.check_out as string,
+        };
+      }
+      if (error && (error.code === "23P01" || error.message.toLowerCase().includes("exclude"))) {
+        // race lost on this room — try next
+        continue;
+      }
+      if (error) throw new Error(error.message);
+    }
+    throw new Error(`All ${data.tier} rooms were just booked for those dates.`);
+  });
+
+
 // ---------------- Public: fake Paystack — settle payment (legacy) ----------------
 const settleSchema = z.object({
   reservation_id: z.string().uuid(),
