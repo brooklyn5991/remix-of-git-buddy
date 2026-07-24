@@ -219,74 +219,91 @@ export const verifySquadPayment = createServerFn({ method: "POST" })
   .inputValidator((d: unknown) => verifySchema.parse(d))
   .handler(async ({ data }) => {
     const sb = publicClient();
-
-    // Support mock testing for developers who haven't registered on Squadco yet
     if (data.reference.startsWith("FAKE-SQD-")) {
-      const { error: uErr } = await sb
-        .from("reservations")
-        .update({
-          payment_status: "paid",
-          payment_reference: data.reference,
-          status: "confirmed",
-        })
+      const { error: uErr } = await sb.from("reservations")
+        .update({ payment_status: "paid", payment_reference: data.reference, status: "confirmed" })
         .eq("id", data.reservation_id);
       if (uErr) throw new Error(uErr.message);
       return { ok: true };
     }
-
     const secret = process.env.SQUAD_SECRET_KEY;
     if (!secret) throw new Error("Squad secret key not configured");
+    const { data: reservation, error: rErr } = await sb
+      .from("reservations").select("id, total_ngn").eq("id", data.reservation_id).maybeSingle();
+    if (rErr || !reservation) throw new Error("Reservation not found");
+    const baseUrl = secret.startsWith("sandbox_") ? "https://sandbox-api-d.squadco.com" : "https://api-d.squadco.com";
+    const resp = await fetch(`${baseUrl}/transaction/verify/${encodeURIComponent(data.reference)}`, {
+      headers: { Authorization: `Bearer ${secret}` },
+    });
+    const body = (await resp.json()) as { success: boolean; data?: { transaction_status: string; transaction_amount: number } };
+    if (!body.success || !body.data) throw new Error("Could not verify transaction with Squadco");
+    const ok = body.data.transaction_status === "Success" && body.data.transaction_amount === (reservation.total_ngn as number) * 100;
+    if (!ok) {
+      await sb.from("reservations").update({ payment_status: "failed", status: "cancelled" }).eq("id", data.reservation_id).eq("payment_status", "pending");
+      throw new Error("Payment was not successful");
+    }
+    const { error: uErr } = await sb.from("reservations")
+      .update({ payment_status: "paid", payment_reference: data.reference, status: "confirmed" })
+      .eq("id", data.reservation_id);
+    if (uErr) throw new Error(uErr.message);
+    return { ok: true };
+  });
 
+// ---------------- Public: verify a Paystack transaction ----------------
+export const verifyPaystackPayment = createServerFn({ method: "POST" })
+  .inputValidator((d: unknown) => verifySchema.parse(d))
+  .handler(async ({ data }) => {
+    const secret = process.env.PAYSTACK_SECRET_KEY;
+    if (!secret) throw new Error("Paystack secret key not configured on the server.");
+    const sb = publicClient();
     const { data: reservation, error: rErr } = await sb
       .from("reservations")
-      .select("id, total_ngn, payment_status")
+      .select("id, total_ngn, guest_name, guest_email, guest_phone, check_in, check_out, confirmation_code, rooms(room_number, tier, name)")
       .eq("id", data.reservation_id)
       .maybeSingle();
     if (rErr || !reservation) throw new Error("Reservation not found");
 
-    const isSandbox = secret.startsWith("sandbox_") || secret.includes("test");
-    const baseUrl = isSandbox
-      ? "https://sandbox-api-d.squadco.com"
-      : "https://api-d.squadco.com";
-
-    const resp = await fetch(`${baseUrl}/transaction/verify/${encodeURIComponent(data.reference)}`, {
+    const resp = await fetch(`https://api.paystack.co/transaction/verify/${encodeURIComponent(data.reference)}`, {
       headers: { Authorization: `Bearer ${secret}` },
     });
-    const body = (await resp.json()) as { 
-      status: number; 
-      success: boolean;
-      data?: { 
-        transaction_status: string; 
-        transaction_amount: number; 
-        transaction_currency_id: string; 
-      } 
+    const body = (await resp.json()) as {
+      status: boolean;
+      message: string;
+      data?: { status: string; amount: number; currency: string; reference: string };
     };
+    if (!body.status || !body.data) throw new Error(body.message || "Could not verify Paystack transaction");
 
-    if (!body.success || !body.data) throw new Error("Could not verify transaction with Squadco");
-
-    const ok =
-      body.data.transaction_status === "Success" &&
-      body.data.transaction_amount === (reservation.total_ngn as number) * 100;
-
+    const expectedKobo = (reservation.total_ngn as number) * 100;
+    const ok = body.data.status === "success" && body.data.amount === expectedKobo && body.data.currency === "NGN";
     if (!ok) {
-      await sb
-        .from("reservations")
+      await sb.from("reservations")
         .update({ payment_status: "failed", status: "cancelled" })
-        .eq("id", data.reservation_id)
-        .eq("payment_status", "pending");
+        .eq("id", data.reservation_id).eq("payment_status", "pending");
       throw new Error("Payment was not successful");
     }
 
-    const { error: uErr } = await sb
-      .from("reservations")
-      .update({
-        payment_status: "paid",
-        payment_reference: data.reference,
-        status: "confirmed",
-      })
+    const { error: uErr } = await sb.from("reservations")
+      .update({ payment_status: "paid", payment_reference: data.reference, status: "confirmed" })
       .eq("id", data.reservation_id);
     if (uErr) throw new Error(uErr.message);
-    return { ok: true };
+
+    const room = reservation.rooms as { room_number: string; tier: string; name: string } | null;
+    return {
+      ok: true,
+      reservation: {
+        id: reservation.id as string,
+        confirmation_code: reservation.confirmation_code as string,
+        guest_name: reservation.guest_name as string,
+        guest_email: reservation.guest_email as string,
+        guest_phone: reservation.guest_phone as string,
+        check_in: reservation.check_in as string,
+        check_out: reservation.check_out as string,
+        total_ngn: reservation.total_ngn as number,
+        room_number: room?.room_number ?? "",
+        room_tier: room?.tier ?? "",
+        room_name: room?.name ?? "",
+      },
+    };
   });
 
 
