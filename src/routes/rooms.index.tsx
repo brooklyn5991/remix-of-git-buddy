@@ -17,7 +17,7 @@ const tomorrow = () => {
   return d.toISOString().slice(0, 10);
 };
 
-const TIER_ORDER = ["Standard", "Deluxe", "Executive"] as const;
+const TIER_ORDER = ["Standard", "Deluxe", "Executive", "Suite"] as const;
 type Tier = (typeof TIER_ORDER)[number];
 
 export const Route = createFileRoute("/rooms/")({

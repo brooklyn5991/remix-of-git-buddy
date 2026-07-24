@@ -106,7 +106,7 @@ export const createOnlineReservation = createServerFn({ method: "POST" })
 
 // ---------------- Public: reserve next available room of a tier ----------------
 const tierBookingSchema = z.object({
-  tier: z.enum(["Standard", "Deluxe", "Executive"]),
+  tier: z.enum(["Standard", "Deluxe", "Executive", "Suite"]),
   guest_name: z.string().min(2).max(120),
   guest_email: z.string().email(),
   guest_phone: z.string().min(6).max(30),

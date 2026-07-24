@@ -128,7 +128,7 @@ function Index() {
                     Room Collection
                   </span>
                   <p className="text-gold-light mt-2 font-serif text-lg leading-tight">
-                    Standard, Deluxe &amp; Executive
+                    Standard, Deluxe, Executive &amp; Suite
                   </p>
                 </div>
               </div>
@@ -268,7 +268,7 @@ function Index() {
                 {
                   title: "The Estate",
                   items: [
-                    "Standard · Deluxe · Executive",
+                    "Standard · Deluxe · Executive · Suite",
                     "Secure in-compound parking",
                     "Estate security & CCTV",
                     "Landscaped garden courtyard",

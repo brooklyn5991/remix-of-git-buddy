@@ -18,7 +18,7 @@ const tomorrow = () => {
   return d.toISOString().slice(0, 10);
 };
 
-const TIERS = { standard: "Standard", deluxe: "Deluxe", executive: "Executive" } as const;
+const TIERS = { standard: "Standard", deluxe: "Deluxe", executive: "Executive", suite: "Suite" } as const;
 
 const searchSchema = z.object({
   check_in: z.string().optional(),
@@ -84,7 +84,7 @@ function BookTier() {
 
   const mutation = useMutation({
     mutationFn: (payload: {
-      tier: "Standard" | "Deluxe" | "Executive";
+      tier: "Standard" | "Deluxe" | "Executive" | "Suite";
       guest_name: string;
       guest_email: string;
       guest_phone: string;
