@@ -268,12 +268,13 @@ function Index() {
                 {
                   title: "The Estate",
                   items: [
-                    "Rooms across two floors",
-                    "Ground floor · Rooms 101 – 108",
-                    "First floor · Rooms 201 – 213",
                     "Standard · Deluxe · Executive",
+                    "Secure in-compound parking",
+                    "Estate security & CCTV",
+                    "Landscaped garden courtyard",
                   ],
                 },
+
               ].map((col) => (
                 <div key={col.title}>
                   <h4 className="font-serif text-xl text-gold mb-4">{col.title}</h4>

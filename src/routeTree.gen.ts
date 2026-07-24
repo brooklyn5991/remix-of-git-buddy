@@ -20,6 +20,7 @@ import { Route as RoomsIndexRouteImport } from './routes/rooms.index'
 import { Route as SquadcoIdRouteImport } from './routes/squadco.$id'
 import { Route as RoomsSlugRouteImport } from './routes/rooms.$slug'
 import { Route as ReservationIdRouteImport } from './routes/reservation.$id'
+import { Route as BookTierRouteImport } from './routes/book.$tier'
 import { Route as AuthenticatedVaultRouteImport } from './routes/_authenticated/vault'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
 
@@ -77,6 +78,11 @@ const ReservationIdRoute = ReservationIdRouteImport.update({
   path: '/reservation/$id',
   getParentRoute: () => rootRouteImport,
 } as any)
+const BookTierRoute = BookTierRouteImport.update({
+  id: '/book/$tier',
+  path: '/book/$tier',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AuthenticatedVaultRoute = AuthenticatedVaultRouteImport.update({
   id: '/vault',
   path: '/vault',
@@ -97,6 +103,7 @@ export interface FileRoutesByFullPath {
   '/rooms': typeof RoomsRouteWithChildren
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/vault': typeof AuthenticatedVaultRoute
+  '/book/$tier': typeof BookTierRoute
   '/reservation/$id': typeof ReservationIdRoute
   '/rooms/$slug': typeof RoomsSlugRoute
   '/squadco/$id': typeof SquadcoIdRoute
@@ -110,6 +117,7 @@ export interface FileRoutesByTo {
   '/gallery': typeof GalleryRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/vault': typeof AuthenticatedVaultRoute
+  '/book/$tier': typeof BookTierRoute
   '/reservation/$id': typeof ReservationIdRoute
   '/rooms/$slug': typeof RoomsSlugRoute
   '/squadco/$id': typeof SquadcoIdRoute
@@ -126,6 +134,7 @@ export interface FileRoutesById {
   '/rooms': typeof RoomsRouteWithChildren
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
   '/_authenticated/vault': typeof AuthenticatedVaultRoute
+  '/book/$tier': typeof BookTierRoute
   '/reservation/$id': typeof ReservationIdRoute
   '/rooms/$slug': typeof RoomsSlugRoute
   '/squadco/$id': typeof SquadcoIdRoute
@@ -142,6 +151,7 @@ export interface FileRouteTypes {
     | '/rooms'
     | '/dashboard'
     | '/vault'
+    | '/book/$tier'
     | '/reservation/$id'
     | '/rooms/$slug'
     | '/squadco/$id'
@@ -155,6 +165,7 @@ export interface FileRouteTypes {
     | '/gallery'
     | '/dashboard'
     | '/vault'
+    | '/book/$tier'
     | '/reservation/$id'
     | '/rooms/$slug'
     | '/squadco/$id'
@@ -170,6 +181,7 @@ export interface FileRouteTypes {
     | '/rooms'
     | '/_authenticated/dashboard'
     | '/_authenticated/vault'
+    | '/book/$tier'
     | '/reservation/$id'
     | '/rooms/$slug'
     | '/squadco/$id'
@@ -184,6 +196,7 @@ export interface RootRouteChildren {
   ContactRoute: typeof ContactRoute
   GalleryRoute: typeof GalleryRoute
   RoomsRoute: typeof RoomsRouteWithChildren
+  BookTierRoute: typeof BookTierRoute
   ReservationIdRoute: typeof ReservationIdRoute
   SquadcoIdRoute: typeof SquadcoIdRoute
 }
@@ -267,6 +280,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ReservationIdRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/book/$tier': {
+      id: '/book/$tier'
+      path: '/book/$tier'
+      fullPath: '/book/$tier'
+      preLoaderRoute: typeof BookTierRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/_authenticated/vault': {
       id: '/_authenticated/vault'
       path: '/vault'
@@ -317,6 +337,7 @@ const rootRouteChildren: RootRouteChildren = {
   ContactRoute: ContactRoute,
   GalleryRoute: GalleryRoute,
   RoomsRoute: RoomsRouteWithChildren,
+  BookTierRoute: BookTierRoute,
   ReservationIdRoute: ReservationIdRoute,
   SquadcoIdRoute: SquadcoIdRoute,
 }
