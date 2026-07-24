@@ -82,6 +82,7 @@ function Dashboard() {
           <div>
             <p className="text-[10px] uppercase tracking-[0.3em] text-gold">Front Desk</p>
             <h1 className="font-serif text-2xl text-gold-light">Garen&rsquo;s Garden</h1>
+            <p className="text-[10px] tracking-[0.15em] text-zinc-500 mt-1">52 New Sapele/Agbor Road, Obiaruku, Delta State</p>
           </div>
           <div className="flex items-center gap-6 text-xs">
             <span className="text-zinc-400">{role.data?.email}</span>
