@@ -130,7 +130,7 @@ function ContactPage() {
               <Info label="Reception" value="+234 (0) 800 000 0000" />
               <Info label="Check-in" value="3:00 PM daily" />
               <Info label="Check-out" value="11:00 AM daily" />
-              <Info label="Address" value="Garen's Garden · Lagos, Nigeria" />
+              <Info label="Address" value="52 New Sapele/Agbor Road, Obiaruku, Delta State" />
             </div>
 
             <a
