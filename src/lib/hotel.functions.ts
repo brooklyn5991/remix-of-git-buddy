@@ -306,6 +306,20 @@ export const verifyPaystackPayment = createServerFn({ method: "POST" })
     };
   });
 
+// ---------------- Public: cancel a pending reservation (payment cancelled/failed) ----------------
+export const cancelPendingReservation = createServerFn({ method: "POST" })
+  .inputValidator((d: unknown) => z.object({ reservation_id: z.string().uuid() }).parse(d))
+  .handler(async ({ data }) => {
+    const sb = publicClient();
+    const { error } = await sb
+      .from("reservations")
+      .update({ status: "cancelled", payment_status: "failed" })
+      .eq("id", data.reservation_id)
+      .eq("payment_status", "pending");
+    if (error) throw new Error(error.message);
+    return { ok: true };
+  });
+
 
 // ---------------- Public: fetch reservation by id (for payment page) ----------------
 export const getReservation = createServerFn({ method: "POST" })

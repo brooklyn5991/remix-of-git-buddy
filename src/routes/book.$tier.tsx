@@ -6,7 +6,7 @@ import { z } from "zod";
 import PaystackPop from "@paystack/inline-js";
 import { SiteNav } from "@/components/site-nav";
 import { SiteFooter } from "@/components/site-footer";
-import { createReservationByTier, listRooms, getBookedRoomIds, verifyPaystackPayment } from "@/lib/hotel.functions";
+import { createReservationByTier, listRooms, getBookedRoomIds, verifyPaystackPayment, cancelPendingReservation } from "@/lib/hotel.functions";
 import { roomImage } from "@/lib/room-images";
 import { openBookingNotifications } from "@/lib/booking-notify";
 
@@ -55,6 +55,7 @@ function BookTier() {
   const fetchBooked = useServerFn(getBookedRoomIds);
   const reserve = useServerFn(createReservationByTier);
   const verifyPaystack = useServerFn(verifyPaystackPayment);
+  const cancelPending = useServerFn(cancelPendingReservation);
 
   const [checkIn, setCheckIn] = useState(search.check_in || today());
   const [checkOut, setCheckOut] = useState(search.check_out || tomorrow());
@@ -121,16 +122,19 @@ function BookTier() {
               openBookingNotifications(verified.reservation);
               navigate({ to: "/reservation/$id", params: { id: res.id }, search: { paid: 1 } });
             } catch (err) {
+              try { await cancelPending({ data: { reservation_id: res.id } }); } catch { /* ignore */ }
               setPayError((err as Error).message);
             } finally {
               setProcessing(false);
             }
           },
-          onCancel: () => {
+          onCancel: async () => {
+            try { await cancelPending({ data: { reservation_id: res.id } }); } catch { /* ignore */ }
             setProcessing(false);
-            setPayError("Payment cancelled. Try again to confirm.");
+            setPayError("Payment cancelled. The room hold has been released — try again to confirm.");
           },
-          onError: (err) => {
+          onError: async (err) => {
+            try { await cancelPending({ data: { reservation_id: res.id } }); } catch { /* ignore */ }
             setProcessing(false);
             setPayError((err as Error)?.message || "Payment failed.");
           },
