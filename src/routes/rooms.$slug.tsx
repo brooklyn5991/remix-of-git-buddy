@@ -37,6 +37,7 @@ function RoomDetail() {
   const fetchBooked = useServerFn(getBookedRoomIds);
   const reserve = useServerFn(createOnlineReservation);
   const verifyPaystack = useServerFn(verifyPaystackPayment);
+  const cancelPending = useServerFn(cancelPendingReservation);
 
   const roomsQuery = useQuery({ queryKey: ["rooms"], queryFn: () => fetchRooms() });
   const room = (roomsQuery.data ?? []).find((r) => r.room_number === slug);
