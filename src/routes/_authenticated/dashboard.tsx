@@ -105,6 +105,38 @@ function Dashboard() {
           <MetricCard label="Active reservations" value={active.length} />
         </section>
 
+        {/* Rooms Inventory (staff-only, shows physical room numbers) */}
+        <section>
+          <p className="text-[10px] uppercase tracking-[0.3em] text-gold mb-4">Rooms Inventory</p>
+          <div className="ring-1 ring-gold/20 overflow-x-auto">
+            <table className="w-full text-sm">
+              <thead className="bg-warm/10 text-[10px] uppercase tracking-[0.2em] text-gold/80">
+                <tr>
+                  <th className="text-left p-3">Room #</th>
+                  <th className="text-left p-3">Category</th>
+                  <th className="text-left p-3">Rate / night</th>
+                  <th className="text-left p-3">Status</th>
+                </tr>
+              </thead>
+              <tbody>
+                {(rooms.data ?? []).slice().sort((a, b) => Number(a.room_number) - Number(b.room_number)).map((room) => {
+                  const activeRes = allRes.find((r) => r.room_id === room.id && (r.status === "checked_in" || ((r.status === "confirmed" || r.status === "pending") && r.check_in <= todayStr && r.check_out > todayStr)));
+                  const status = activeRes?.status === "checked_in" ? "Checked In" : activeRes ? "Reserved" : "Available";
+                  const color = status === "Available" ? "text-emerald-300" : status === "Checked In" ? "text-gold" : "text-amber-300";
+                  return (
+                    <tr key={room.id} className="border-t border-gold/10 hover:bg-warm/5">
+                      <td className="p-3 font-mono text-gold">{room.room_number}</td>
+                      <td className="p-3">{room.tier}</td>
+                      <td className="p-3">{currency(room.price_ngn as number)}</td>
+                      <td className={`p-3 text-xs uppercase tracking-[0.2em] ${color}`}>{status}</td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
+        </section>
+
         {/* Reservations table */}
         <section>
           <p className="text-[10px] uppercase tracking-[0.3em] text-gold mb-4">All Reservations</p>
