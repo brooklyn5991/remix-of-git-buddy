@@ -87,6 +87,7 @@ function RoomDetail() {
           email,
           amount: res.total_ngn * 100,
           currency: "NGN",
+          channels: ["card"],
           metadata: {
             guest_name: name,
             whatsapp_phone: phone,
@@ -109,12 +110,12 @@ function RoomDetail() {
           onCancel: async () => {
             try { await cancelPending({ data: { reservation_id: res.id } }); } catch { /* ignore */ }
             setProcessing(false);
-            setPayError("Payment cancelled. The room hold has been released — try again to confirm.");
+            setPayError("Payment cancelled. No room was reserved — try again to confirm.");
           },
           onError: async (err) => {
             try { await cancelPending({ data: { reservation_id: res.id } }); } catch { /* ignore */ }
             setProcessing(false);
-            setPayError((err as Error)?.message || "Payment failed.");
+            setPayError((err as Error)?.message || "Payment failed. No room was reserved.");
           },
         });
       } catch (err) {
