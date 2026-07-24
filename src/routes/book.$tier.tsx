@@ -6,7 +6,7 @@ import { z } from "zod";
 import PaystackPop from "@paystack/inline-js";
 import { SiteNav } from "@/components/site-nav";
 import { SiteFooter } from "@/components/site-footer";
-import { createReservationByTier, listRooms, getBookedRoomIds, verifyPaystackPayment, cancelPendingReservation } from "@/lib/hotel.functions";
+import { confirmPaystackBookingByTier, listRooms, getBookedRoomIds } from "@/lib/hotel.functions";
 import { roomImage } from "@/lib/room-images";
 import { openBookingNotifications } from "@/lib/booking-notify";
 
@@ -53,9 +53,7 @@ function BookTier() {
 
   const fetchRooms = useServerFn(listRooms);
   const fetchBooked = useServerFn(getBookedRoomIds);
-  const reserve = useServerFn(createReservationByTier);
-  const verifyPaystack = useServerFn(verifyPaystackPayment);
-  const cancelPending = useServerFn(cancelPendingReservation);
+  const confirmPaystackBooking = useServerFn(confirmPaystackBookingByTier);
 
   const [checkIn, setCheckIn] = useState(search.check_in || today());
   const [checkOut, setCheckOut] = useState(search.check_out || tomorrow());
@@ -86,64 +84,62 @@ function BookTier() {
   const total = nights * price;
 
   const mutation = useMutation({
-    mutationFn: (payload: {
+    mutationFn: async (payload: {
       tier: "Standard" | "Deluxe" | "Executive" | "Suite";
       guest_name: string;
       guest_email: string;
       guest_phone: string;
       check_in: string;
       check_out: string;
-    }) => reserve({ data: payload }),
-    onSuccess: async (res) => {
-      setPayError(null);
+    }) => {
       const pk = import.meta.env.VITE_PAYSTACK_PUBLIC_KEY as string | undefined;
       if (!pk) {
-        setPayError("Payment is not configured. Please contact the hotel.");
-        return;
+        throw new Error("Payment is not configured. Please contact the hotel.");
       }
-      try {
+
+      return await new Promise<void>((resolve, reject) => {
         const paystack = new PaystackPop();
         setProcessing(true);
         paystack.newTransaction({
           key: pk,
-          email,
-          amount: res.total_ngn * 100, // kobo
+          email: payload.guest_email,
+          amount: total * 100, // kobo
           currency: "NGN",
+          channels: ["card"],
           metadata: {
-            guest_name: name,
-            whatsapp_phone: phone,
-            room_category: tierName,
-            reservation_id: res.id,
-            confirmation_code: res.confirmation_code,
+            guest_name: payload.guest_name,
+            whatsapp_phone: payload.guest_phone,
+            room_category: payload.tier,
           },
           onSuccess: async (tx) => {
             try {
-              const verified = await verifyPaystack({ data: { reservation_id: res.id, reference: tx.reference } });
+              const verified = await confirmPaystackBooking({
+                data: {
+                  ...payload,
+                  reference: tx.reference,
+                },
+              });
               openBookingNotifications(verified.reservation);
-              navigate({ to: "/reservation/$id", params: { id: res.id }, search: { paid: 1 } });
+              navigate({ to: "/reservation/$id", params: { id: verified.reservation.id }, search: { paid: 1 } });
+              resolve();
             } catch (err) {
-              try { await cancelPending({ data: { reservation_id: res.id } }); } catch { /* ignore */ }
-              setPayError((err as Error).message);
+              reject(err);
             } finally {
               setProcessing(false);
             }
           },
-          onCancel: async () => {
-            try { await cancelPending({ data: { reservation_id: res.id } }); } catch { /* ignore */ }
+          onCancel: () => {
             setProcessing(false);
-            setPayError("Payment cancelled. The room hold has been released — try again to confirm.");
+            reject(new Error("Payment cancelled. No room was reserved."));
           },
-          onError: async (err) => {
-            try { await cancelPending({ data: { reservation_id: res.id } }); } catch { /* ignore */ }
+          onError: (err) => {
             setProcessing(false);
-            setPayError((err as Error)?.message || "Payment failed.");
+            reject(new Error((err as Error)?.message || "Payment failed. No room was reserved."));
           },
         });
-      } catch (err) {
-        setProcessing(false);
-        setPayError((err as Error).message);
-      }
+      });
     },
+    onMutate: () => setPayError(null),
     onError: (err: Error) => setPayError(err.message),
   });
 
@@ -278,7 +274,7 @@ function BookTier() {
                       disabled={mutation.isPending || processing}
                       className="text-[11px] uppercase tracking-[0.3em] text-deep bg-gold hover:bg-gold-light disabled:opacity-50 px-6 py-3 transition-colors"
                     >
-                      {processing ? "Processing…" : mutation.isPending ? "Reserving…" : "Reserve & Pay"}
+                      {processing ? "Processing…" : mutation.isPending ? "Opening Paystack…" : "Pay by Card"}
                     </button>
                   </div>
 

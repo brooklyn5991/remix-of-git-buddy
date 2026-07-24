@@ -4,6 +4,7 @@ declare module "@paystack/inline-js" {
     email: string;
     amount: number;
     currency?: string;
+    channels?: Array<"card" | "bank" | "ussd" | "qr" | "mobile_money" | "bank_transfer" | "eft">;
     reference?: string;
     metadata?: Record<string, unknown>;
     onSuccess?: (transaction: { reference: string; status: string; trans: string; message: string }) => void;
