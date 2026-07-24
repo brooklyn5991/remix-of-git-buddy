@@ -10,14 +10,15 @@ import { roomImage } from "@/lib/room-images";
 const currency = (n: number) =>
   new Intl.NumberFormat("en-NG", { style: "currency", currency: "NGN", maximumFractionDigits: 0 }).format(n);
 
-const today = () => {
-  return new Date().toISOString().slice(0, 10);
-};
+const today = () => new Date().toISOString().slice(0, 10);
 const tomorrow = () => {
   const d = new Date();
   d.setDate(d.getDate() + 1);
   return d.toISOString().slice(0, 10);
 };
+
+const TIER_ORDER = ["Standard", "Deluxe", "Executive"] as const;
+type Tier = (typeof TIER_ORDER)[number];
 
 export const Route = createFileRoute("/rooms/")({
   component: RoomsPage,
@@ -29,13 +30,8 @@ function RoomsPage() {
 
   const [checkIn, setCheckIn] = useState(today());
   const [checkOut, setCheckOut] = useState(tomorrow());
-  const [tierFilter, setTierFilter] = useState<"All" | "Standard" | "Deluxe" | "Executive">("All");
 
-  const roomsQuery = useQuery({
-    queryKey: ["rooms"],
-    queryFn: () => fetchRooms(),
-  });
-
+  const roomsQuery = useQuery({ queryKey: ["rooms"], queryFn: () => fetchRooms() });
   const bookedQuery = useQuery({
     queryKey: ["booked", checkIn, checkOut],
     queryFn: () => fetchBooked({ data: { check_in: checkIn, check_out: checkOut } }),
@@ -44,7 +40,22 @@ function RoomsPage() {
 
   const bookedSet = useMemo(() => new Set(bookedQuery.data ?? []), [bookedQuery.data]);
   const rooms = roomsQuery.data ?? [];
-  const filtered = tierFilter === "All" ? rooms : rooms.filter((r) => r.tier === tierFilter);
+
+  const tiers = useMemo(() => {
+    return TIER_ORDER.map((tier) => {
+      const inTier = rooms.filter((r) => r.tier === tier);
+      if (inTier.length === 0) return null;
+      const available = inTier.filter((r) => !bookedSet.has(r.id));
+      const sample = inTier[0];
+      const price = Math.min(...inTier.map((r) => r.price_ngn));
+      return {
+        tier: tier as Tier,
+        sample,
+        price,
+        availableCount: available.length,
+      };
+    }).filter((x): x is NonNullable<typeof x> => !!x);
+  }, [rooms, bookedSet]);
 
   return (
     <div className="bg-deep font-sans text-gold-light min-h-screen antialiased">
@@ -53,22 +64,22 @@ function RoomsPage() {
         <section className="px-4 sm:px-6 py-12 md:py-16 max-w-7xl mx-auto animate-fade-in-up">
           <p className="text-[10px] uppercase tracking-[0.4em] text-gold mb-6">Rooms & Availability</p>
           <h1 className="font-serif text-4xl sm:text-5xl md:text-6xl text-gold-light leading-tight mb-6 max-w-3xl">
-            Our rooms. Pick yours.
+            Three rooms. Pick your style.
           </h1>
           <p className="text-zinc-300/85 max-w-2xl leading-relaxed">
-            Choose your dates below and every available room lights up. Rooms shown in muted grey are
-            already reserved for the nights you selected.
+            Choose your dates, pick a room category, and we&rsquo;ll assign the next available room
+            for you. No hunting for a specific number — just comfort, ready when you arrive.
           </p>
         </section>
 
         <section className="px-4 sm:px-6 max-w-7xl mx-auto mb-10 animate-fade-in-up delay-100 hover-glow">
-          <div className="bg-warm/10 ring-1 ring-gold/20 p-6 grid md:grid-cols-4 gap-4 items-end">
+          <div className="bg-warm/10 ring-1 ring-gold/20 p-6 grid md:grid-cols-2 gap-4 items-end">
             <div>
               <label className="block text-[10px] uppercase tracking-[0.3em] text-gold/70 mb-2">Check-in</label>
               <input
                 type="date"
                 value={checkIn}
-                min={new Date().toISOString().slice(0, 10)}
+                min={today()}
                 onChange={(e) => setCheckIn(e.target.value)}
                 className="w-full bg-deep border border-gold/30 text-gold-light px-3 py-2 focus:border-gold outline-none transition-colors"
               />
@@ -83,29 +94,6 @@ function RoomsPage() {
                 className="w-full bg-deep border border-gold/30 text-gold-light px-3 py-2 focus:border-gold outline-none transition-colors"
               />
             </div>
-            <div>
-              <label className="block text-[10px] uppercase tracking-[0.3em] text-gold/70 mb-2">Room Tier</label>
-              <select
-                value={tierFilter}
-                onChange={(e) => setTierFilter(e.target.value as typeof tierFilter)}
-                className="w-full bg-deep border border-gold/30 text-gold-light px-3 py-2 focus:border-gold outline-none transition-colors"
-              >
-                <option>All</option>
-                <option>Standard</option>
-                <option>Deluxe</option>
-                <option>Executive</option>
-              </select>
-            </div>
-            <div className="text-sm text-zinc-300/80">
-              {bookedQuery.isLoading ? (
-                <span>Checking availability…</span>
-              ) : (
-                <span>
-                  <span className="text-gold text-lg font-serif">{filtered.filter((r) => !bookedSet.has(r.id)).length}</span>
-                  <span className="text-zinc-400"> of {filtered.length} available</span>
-                </span>
-              )}
-            </div>
           </div>
         </section>
 
@@ -113,54 +101,72 @@ function RoomsPage() {
           {roomsQuery.isLoading ? (
             <p className="text-zinc-400 text-center py-20">Loading rooms…</p>
           ) : (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 animate-scale-in delay-200">
-              {filtered.map((room, idx) => {
-                const booked = bookedSet.has(room.id);
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 animate-scale-in delay-200">
+              {tiers.map(({ tier, sample, price, availableCount }, idx) => {
+                const soldOut = availableCount === 0 && !bookedQuery.isLoading;
+                const features = (sample.features as string[] | null) ?? [];
                 return (
                   <article
-                    key={room.id}
-                    className={`bg-warm/5 ring-1 ring-gold/10 p-1 flex flex-col group hover-tilt animate-bounce-in ${booked ? "opacity-40" : ""}`}
-                    style={{ animationDelay: `${(idx % 6 + 1) * 75}ms` }}
+                    key={tier}
+                    className={`bg-warm/5 ring-1 ring-gold/10 p-1 flex flex-col group hover-tilt animate-bounce-in ${soldOut ? "opacity-60" : ""}`}
+                    style={{ animationDelay: `${(idx + 1) * 100}ms` }}
                   >
-                    <div className="aspect-[16/10] sm:aspect-[4/3] overflow-hidden rounded-[6px] relative max-h-[260px] sm:max-h-none">
+                    <div className="aspect-[16/10] overflow-hidden rounded-[6px] relative">
                       <img
-                        src={roomImage(room.image_slug)}
-                        alt={room.name}
+                        src={roomImage(sample.image_slug)}
+                        alt={`${tier} room`}
                         loading="lazy"
                         className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-[1.03]"
                       />
                       <div className="absolute top-3 left-3 bg-deep/85 px-3 py-1 text-[10px] uppercase tracking-[0.25em] text-gold-light">
-                        Room {room.room_number}
+                        {tier}
                       </div>
-                      {booked && (
-                        <div className="absolute inset-0 bg-deep/60 flex items-center justify-center">
+                      {soldOut && (
+                        <div className="absolute inset-0 bg-deep/70 flex items-center justify-center">
                           <span className="text-[10px] uppercase tracking-[0.3em] text-gold-light bg-deep px-4 py-2 border border-gold/30">
-                            Reserved
+                            Fully Booked
                           </span>
                         </div>
                       )}
                     </div>
-                    <div className="p-4 sm:p-5 flex flex-col flex-1 min-w-0">
-                      <p className="text-[10px] uppercase tracking-[0.3em] text-gold/70 mb-1">
-                        {room.tier} · Floor {room.floor}
-                      </p>
-                      <h2 className="font-serif text-xl text-gold-light mb-3">{room.name}</h2>
-                      <p className="text-zinc-300/80 text-sm mb-4 line-clamp-2">{room.description}</p>
-                      <div className="mt-auto grid grid-cols-[minmax(0,1fr)_auto] items-end gap-3 pt-4 border-t border-gold/10">
-                        <div>
-                          <span className="font-serif text-xl sm:text-2xl text-gold">{currency(room.price_ngn)}</span>
-                          <span className="text-xs text-zinc-400 ml-1">/ night</span>
+                    <div className="p-5 sm:p-6 flex flex-col flex-1 min-w-0">
+                      <h2 className="font-serif text-2xl text-gold-light mb-2">The {tier} Room</h2>
+                      <p className="text-zinc-300/80 text-sm mb-4 line-clamp-3">{sample.description}</p>
+
+                      <ul className="space-y-2 mb-6 text-sm text-zinc-300/85">
+                        {features.slice(0, 5).map((f) => (
+                          <li key={f} className="flex gap-2">
+                            <span className="text-gold/60">·</span>
+                            <span>{f}</span>
+                          </li>
+                        ))}
+                      </ul>
+
+                      <div className="mt-auto pt-4 border-t border-gold/10">
+                        <div className="flex items-end justify-between mb-4">
+                          <div>
+                            <span className="font-serif text-2xl text-gold">{currency(price)}</span>
+                            <span className="text-xs text-zinc-400 ml-1">/ night</span>
+                          </div>
+                          <span className="text-[10px] uppercase tracking-[0.25em] text-zinc-400">
+                            {bookedQuery.isLoading ? "Checking…" : soldOut ? "0 available" : `${availableCount} available`}
+                          </span>
                         </div>
-                        {booked ? (
-                          <span className="text-[10px] uppercase tracking-[0.25em] text-zinc-500">Unavailable</span>
+                        {soldOut ? (
+                          <button
+                            disabled
+                            className="w-full text-center text-[11px] uppercase tracking-[0.3em] text-zinc-500 border border-zinc-700 py-3 cursor-not-allowed"
+                          >
+                            Sold Out
+                          </button>
                         ) : (
                           <Link
-                            to="/rooms/$slug"
-                            params={{ slug: room.room_number }}
+                            to="/book/$tier"
+                            params={{ tier: tier.toLowerCase() }}
                             search={{ check_in: checkIn, check_out: checkOut }}
-                            className="text-[10px] uppercase tracking-[0.25em] text-gold-light border-b border-gold/40 hover:border-gold pb-1 transition-all"
+                            className="block w-full text-center text-[11px] uppercase tracking-[0.3em] text-deep bg-gold hover:bg-gold-light py-3 transition-colors"
                           >
-                            Reserve →
+                            Book Room
                           </Link>
                         )}
                       </div>
