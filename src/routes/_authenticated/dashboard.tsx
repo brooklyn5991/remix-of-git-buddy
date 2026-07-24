@@ -120,7 +120,7 @@ function Dashboard() {
               </thead>
               <tbody>
                 {(rooms.data ?? []).slice().sort((a, b) => Number(a.room_number) - Number(b.room_number)).map((room) => {
-                  const activeRes = allRes.find((r) => r.room_id === room.id && (r.status === "checked_in" || ((r.status === "confirmed" || r.status === "pending") && r.check_in <= todayStr && r.check_out > todayStr)));
+                  const activeRes = allRes.find((r) => r.room_id === room.id && (r.status === "checked_in" || (r.status === "confirmed" && r.check_in <= todayStr && r.check_out > todayStr)));
                   const status = activeRes?.status === "checked_in" ? "Checked In" : activeRes ? "Reserved" : "Available";
                   const color = status === "Available" ? "text-emerald-300" : status === "Checked In" ? "text-gold" : "text-amber-300";
                   return (
