@@ -84,7 +84,7 @@ function BookTier() {
 
   const mutation = useMutation({
     mutationFn: (payload: {
-      tier: "Standard" | "Deluxe" | "Executive";
+      tier: "Standard" | "Deluxe" | "Executive" | "Suite";
       guest_name: string;
       guest_email: string;
       guest_phone: string;

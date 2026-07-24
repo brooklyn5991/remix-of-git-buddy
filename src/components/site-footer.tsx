@@ -12,6 +12,10 @@ export function SiteFooter() {
             Obiaruku&rsquo;s finest bed &amp; breakfast. Reborn 2026. Where every stay is part of our
             story.
           </p>
+          <p className="text-xs text-zinc-500 mt-4 leading-relaxed">
+            52 New Sapele/Agbor Road,<br />
+            Obiaruku, Delta State
+          </p>
         </div>
         <div className="flex flex-col gap-3">
           <h5 className="text-[10px] uppercase tracking-[0.25em] text-gold mb-2">Explore</h5>
