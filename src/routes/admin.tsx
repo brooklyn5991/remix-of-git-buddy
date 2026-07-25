@@ -28,6 +28,7 @@ export const Route = createFileRoute("/admin")({
 });
 
 function AdminPage() {
+  const navigate = useNavigate();
   const [creds, setCreds] = useState<Creds | null>(null);
 
   useEffect(() => {
@@ -40,8 +41,10 @@ function AdminPage() {
   return <AdminDashboard creds={creds} onSignOut={() => {
     sessionStorage.removeItem(CREDS_KEY);
     setCreds(null);
+    navigate({ to: "/", replace: true });
   }} />;
 }
+
 
 function AdminLogin({ onLoggedIn }: { onLoggedIn: (c: Creds) => void }) {
   const login = useServerFn(adminLogin);
