@@ -38,7 +38,7 @@ export function SiteNav() {
               to="/auth"
               className="text-[11px] font-medium uppercase tracking-[0.2em] text-gold-light/50 hover:text-gold transition-colors"
             >
-              Staff
+              Lead
             </Link>
           </div>
 
