@@ -95,7 +95,7 @@ export function SiteNav() {
             onClick={() => setOpen(false)}
             className="py-3 text-xs font-medium uppercase tracking-[0.25em] text-gold-light/50 hover:text-gold transition-colors"
           >
-            Staff Portal
+            Lead Portal
           </Link>
         </div>
       </div>
