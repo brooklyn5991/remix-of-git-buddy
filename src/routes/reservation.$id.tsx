@@ -64,16 +64,17 @@ function ReservationPage() {
           <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
             {/* Payment Successful Banner */}
             {paid && (
-              <div className="flex items-center gap-3 bg-emerald-500/10 border border-emerald-500/20 p-4 rounded-xl text-emerald-300">
+              <div className="flex items-center gap-3 bg-emerald-500/10 border border-emerald-500/20 p-4 rounded-xl text-emerald-300 print:hidden">
                 <CheckCircle2 className="h-6 w-6 shrink-0 text-emerald-400" />
                 <div>
-                  <p className="font-semibold text-sm">Payment Successful via Squadco</p>
+                  <p className="font-semibold text-sm">Payment Successful via Paystack</p>
                   <p className="text-xs text-emerald-300/80">
-                    A confirmation email with your invoice was successfully sent to <span className="font-medium underline">{r.guest_email}</span>.
+                    A confirmation email with your booking details was sent to <span className="font-medium underline">{r.guest_email}</span>.
                   </p>
                 </div>
               </div>
             )}
+
 
             {/* Ticket Container */}
             <div className="relative bg-zinc-950 border border-gold/30 rounded-3xl overflow-hidden shadow-2xl shadow-black/80">
@@ -154,9 +155,10 @@ function ReservationPage() {
                     <p className="text-[10px] uppercase tracking-[0.2em] text-zinc-500 mb-0.5">Payment Method</p>
                     <div className="flex items-center gap-1 text-sm font-semibold text-zinc-200">
                       <CreditCard className="h-3.5 w-3.5 text-gold/60" />
-                      <span>Squadco</span>
+                      <span>Paystack</span>
                     </div>
                   </div>
+
                   <div>
                     <p className="text-[10px] uppercase tracking-[0.2em] text-zinc-500 mb-0.5">Total NGN</p>
                     <p className="text-sm font-bold text-gold-light">{currency(r.total_ngn)}</p>
@@ -211,10 +213,14 @@ function ReservationPage() {
                 </div>
                 <span className="text-[10px] text-zinc-500 font-mono tracking-widest mt-2">{r.confirmation_code}</span>
 
-                <div className="mt-6 text-center">
+                <div className="mt-6 text-center space-y-2">
+                  <p className="text-xs text-gold-light">
+                    <span className="text-gold/70 uppercase tracking-[0.2em] text-[10px] block mb-1">Hotel Address</span>
+                    52 New Sapele/Agbor Road, Obiaruku, Delta State
+                  </p>
                   {paid ? (
                     <p className="text-xs text-zinc-400">
-                      Show this ticket at reception upon arrival. Check-in starts at 3:00 PM.
+                      Show this ticket at reception on arrival. Check-in from 3:00 PM.
                     </p>
                   ) : (
                     <p className="text-xs text-amber-300">
@@ -226,8 +232,14 @@ function ReservationPage() {
 
             </div>
 
-            {/* Back Button */}
-            <div className="text-center">
+            {/* Actions */}
+            <div className="text-center flex flex-col sm:flex-row items-center justify-center gap-4 print:hidden">
+              <button
+                onClick={() => window.print()}
+                className="text-[10px] uppercase tracking-[0.3em] text-deep bg-gold hover:bg-gold-light px-5 py-2 transition-colors"
+              >
+                Print Receipt
+              </button>
               <Link
                 to="/rooms"
                 className="inline-block text-[10px] uppercase tracking-[0.3em] text-gold border-b border-gold/40 hover:border-gold pb-1 transition-colors"
@@ -235,6 +247,7 @@ function ReservationPage() {
                 ← Back to rooms
               </Link>
             </div>
+
           </div>
         )}
       </main>
