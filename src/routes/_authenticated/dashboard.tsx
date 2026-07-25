@@ -60,18 +60,21 @@ function Dashboard() {
   // Metrics computed from reservations list.
   const allRes = reservations.data ?? [];
   const totalRooms = rooms.data?.length ?? 0;
-  
-  // A room is occupied today if it has an active reservation (pending, confirmed, or checked_in) overlapping today.
+
+  // A room is occupied today only if a confirmed/checked-in reservation spans today.
+  // check_out is exclusive (guest leaves that morning) so use strict >.
   const todayStr = new Date().toISOString().slice(0, 10);
-  const occupiedToday = allRes.filter((r) => 
-    (r.status === "confirmed" || r.status === "checked_in" || r.status === "pending") &&
+  const occupiedToday = allRes.filter((r) =>
+    (r.status === "confirmed" || r.status === "checked_in") &&
     r.check_in <= todayStr &&
-    r.check_out >= todayStr
+    r.check_out > todayStr
   );
-  
-  const active = allRes.filter((r) => r.status === "confirmed" || r.status === "checked_in" || r.status === "pending");
-  const inHouse = allRes.filter((r) => r.status === "checked_in");
-  const availableNow = totalRooms - occupiedToday.length;
+
+  const active = allRes.filter((r) =>
+    (r.status === "confirmed" || r.status === "checked_in") &&
+    r.check_out > todayStr
+  );
+  const availableNow = Math.max(0, totalRooms - occupiedToday.length);
 
 
 
@@ -120,7 +123,7 @@ function Dashboard() {
               </thead>
               <tbody>
                 {(rooms.data ?? []).slice().sort((a, b) => Number(a.room_number) - Number(b.room_number)).map((room) => {
-                  const activeRes = allRes.find((r) => r.room_id === room.id && (r.status === "checked_in" || (r.status === "confirmed" && r.check_in <= todayStr && r.check_out > todayStr)));
+                  const activeRes = allRes.find((r) => r.room_id === room.id && r.check_out > todayStr && ((r.status === "checked_in") || (r.status === "confirmed" && r.check_in <= todayStr)));
                   const status = activeRes?.status === "checked_in" ? "Checked In" : activeRes ? "Reserved" : "Available";
                   const color = status === "Available" ? "text-emerald-300" : status === "Checked In" ? "text-gold" : "text-amber-300";
                   return (
