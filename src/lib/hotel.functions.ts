@@ -579,31 +579,25 @@ export const listReservations = createServerFn({ method: "GET" })
     return data ?? [];
   });
 
-// ---------------- Admin: hardcoded-credential login + reserved rooms ----------------
-// Uses ADMIN_USERNAME / ADMIN_PASSWORD env vars. Separate from staff auth.
+// ---------------- Admin: backend-stored credential login + reserved rooms ----------------
 const adminCredsSchema = z.object({
   username: z.string().min(1),
   password: z.string().min(1),
 });
 
-function verifyAdminCreds(username: string, password: string) {
-  const u = process.env.ADMIN_USERNAME;
-  const p = process.env.ADMIN_PASSWORD;
-  if (!u || !p) throw new Error("Admin credentials not configured on the server.");
-  if (username !== u || password !== p) throw new Error("Invalid admin credentials.");
-}
-
 export const adminLogin = createServerFn({ method: "POST" })
   .inputValidator((d: unknown) => adminCredsSchema.parse(d))
   .handler(async ({ data }) => {
-    verifyAdminCreds(data.username, data.password);
+    const { verifyAdminCreds } = await import("@/lib/admin-auth.server");
+    await verifyAdminCreds(data.username, data.password);
     return { ok: true };
   });
 
 export const adminListReservedRooms = createServerFn({ method: "POST" })
   .inputValidator((d: unknown) => adminCredsSchema.parse(d))
   .handler(async ({ data }) => {
-    verifyAdminCreds(data.username, data.password);
+    const { verifyAdminCreds } = await import("@/lib/admin-auth.server");
+    await verifyAdminCreds(data.username, data.password);
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     // Clean up expired bookings before reading.
     try { await supabaseAdmin.rpc("auto_checkout_past_reservations"); } catch { /* ignore */ }
