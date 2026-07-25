@@ -24,6 +24,7 @@ import { Route as ReservationIdRouteImport } from './routes/reservation.$id'
 import { Route as BookTierRouteImport } from './routes/book.$tier'
 import { Route as AuthenticatedVaultRouteImport } from './routes/_authenticated/vault'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
+import { Route as ApiPublicPaystackWebhookRouteImport } from './routes/api/public/paystack/webhook'
 
 const RoomsRoute = RoomsRouteImport.update({
   id: '/rooms',
@@ -99,6 +100,12 @@ const AuthenticatedDashboardRoute = AuthenticatedDashboardRouteImport.update({
   path: '/dashboard',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const ApiPublicPaystackWebhookRoute =
+  ApiPublicPaystackWebhookRouteImport.update({
+    id: '/api/public/paystack/webhook',
+    path: '/api/public/paystack/webhook',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -115,6 +122,7 @@ export interface FileRoutesByFullPath {
   '/rooms/$slug': typeof RoomsSlugRoute
   '/squadco/$id': typeof SquadcoIdRoute
   '/rooms/': typeof RoomsIndexRoute
+  '/api/public/paystack/webhook': typeof ApiPublicPaystackWebhookRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -130,6 +138,7 @@ export interface FileRoutesByTo {
   '/rooms/$slug': typeof RoomsSlugRoute
   '/squadco/$id': typeof SquadcoIdRoute
   '/rooms': typeof RoomsIndexRoute
+  '/api/public/paystack/webhook': typeof ApiPublicPaystackWebhookRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -148,6 +157,7 @@ export interface FileRoutesById {
   '/rooms/$slug': typeof RoomsSlugRoute
   '/squadco/$id': typeof SquadcoIdRoute
   '/rooms/': typeof RoomsIndexRoute
+  '/api/public/paystack/webhook': typeof ApiPublicPaystackWebhookRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -166,6 +176,7 @@ export interface FileRouteTypes {
     | '/rooms/$slug'
     | '/squadco/$id'
     | '/rooms/'
+    | '/api/public/paystack/webhook'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -181,6 +192,7 @@ export interface FileRouteTypes {
     | '/rooms/$slug'
     | '/squadco/$id'
     | '/rooms'
+    | '/api/public/paystack/webhook'
   id:
     | '__root__'
     | '/'
@@ -198,6 +210,7 @@ export interface FileRouteTypes {
     | '/rooms/$slug'
     | '/squadco/$id'
     | '/rooms/'
+    | '/api/public/paystack/webhook'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -212,6 +225,7 @@ export interface RootRouteChildren {
   BookTierRoute: typeof BookTierRoute
   ReservationIdRoute: typeof ReservationIdRoute
   SquadcoIdRoute: typeof SquadcoIdRoute
+  ApiPublicPaystackWebhookRoute: typeof ApiPublicPaystackWebhookRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -321,6 +335,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedDashboardRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/api/public/paystack/webhook': {
+      id: '/api/public/paystack/webhook'
+      path: '/api/public/paystack/webhook'
+      fullPath: '/api/public/paystack/webhook'
+      preLoaderRoute: typeof ApiPublicPaystackWebhookRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -361,6 +382,7 @@ const rootRouteChildren: RootRouteChildren = {
   BookTierRoute: BookTierRoute,
   ReservationIdRoute: ReservationIdRoute,
   SquadcoIdRoute: SquadcoIdRoute,
+  ApiPublicPaystackWebhookRoute: ApiPublicPaystackWebhookRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

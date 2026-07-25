@@ -1,8 +1,10 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 import { adminLogin, adminListReservedRooms } from "@/lib/hotel.functions";
+import { supabase } from "@/integrations/supabase/client";
+
 
 const currency = (n: number) =>
   new Intl.NumberFormat("en-NG", { style: "currency", currency: "NGN", maximumFractionDigits: 0 }).format(n);
@@ -115,12 +117,27 @@ function AdminLogin({ onLoggedIn }: { onLoggedIn: (c: Creds) => void }) {
 
 function AdminDashboard({ creds, onSignOut }: { creds: Creds; onSignOut: () => void }) {
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
   const list = useServerFn(adminListReservedRooms);
   const q = useQuery({
     queryKey: ["admin-reserved", creds.username],
     queryFn: () => list({ data: creds }),
-    refetchInterval: 30_000,
+    refetchInterval: 15_000,
   });
+
+  // Live-refresh on any reservation change (paid via webhook, status change, etc).
+  useEffect(() => {
+    const channel = supabase
+      .channel("admin-reservations")
+      .on(
+        "postgres_changes",
+        { event: "*", schema: "public", table: "reservations" },
+        () => { queryClient.invalidateQueries({ queryKey: ["admin-reserved", creds.username] }); },
+      )
+      .subscribe();
+    return () => { supabase.removeChannel(channel); };
+  }, [queryClient, creds.username]);
+
 
   useEffect(() => {
     if (q.error) {

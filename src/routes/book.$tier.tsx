@@ -109,9 +109,13 @@ function BookTier() {
           channels: ["card"],
           metadata: {
             guest_name: payload.guest_name,
+            guest_email: payload.guest_email,
             whatsapp_phone: payload.guest_phone,
             room_category: payload.tier,
+            check_in: payload.check_in,
+            check_out: payload.check_out,
           },
+
           onSuccess: async (tx) => {
             try {
               const verified = await confirmPaystackBooking({
