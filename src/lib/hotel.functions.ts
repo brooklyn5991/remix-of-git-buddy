@@ -566,6 +566,10 @@ export const myRole = createServerFn({ method: "GET" })
 export const listReservations = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }) => {
+    // Auto-checkout past bookings so the counter reflects today's real availability.
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    try { await supabaseAdmin.rpc("auto_checkout_past_reservations"); } catch { /* ignore */ }
+
     const { data, error } = await context.supabase
       .from("reservations")
       .select("id, guest_name, guest_email, guest_phone, check_in, check_out, nights, total_ngn, status, source, confirmation_code, created_at, room_id, rooms(room_number, tier, name)")
@@ -574,6 +578,46 @@ export const listReservations = createServerFn({ method: "GET" })
     if (error) throw new Error(error.message);
     return data ?? [];
   });
+
+// ---------------- Admin: hardcoded-credential login + reserved rooms ----------------
+// Uses ADMIN_USERNAME / ADMIN_PASSWORD env vars. Separate from staff auth.
+const adminCredsSchema = z.object({
+  username: z.string().min(1),
+  password: z.string().min(1),
+});
+
+function verifyAdminCreds(username: string, password: string) {
+  const u = process.env.ADMIN_USERNAME;
+  const p = process.env.ADMIN_PASSWORD;
+  if (!u || !p) throw new Error("Admin credentials not configured on the server.");
+  if (username !== u || password !== p) throw new Error("Invalid admin credentials.");
+}
+
+export const adminLogin = createServerFn({ method: "POST" })
+  .inputValidator((d: unknown) => adminCredsSchema.parse(d))
+  .handler(async ({ data }) => {
+    verifyAdminCreds(data.username, data.password);
+    return { ok: true };
+  });
+
+export const adminListReservedRooms = createServerFn({ method: "POST" })
+  .inputValidator((d: unknown) => adminCredsSchema.parse(d))
+  .handler(async ({ data }) => {
+    verifyAdminCreds(data.username, data.password);
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    // Clean up expired bookings before reading.
+    try { await supabaseAdmin.rpc("auto_checkout_past_reservations"); } catch { /* ignore */ }
+    const { data: rows, error } = await supabaseAdmin
+      .from("reservations")
+      .select("id, guest_name, guest_email, guest_phone, check_in, check_out, total_ngn, status, payment_status, confirmation_code, created_at, rooms(room_number, tier, name)")
+      .eq("payment_status", "paid")
+      .in("status", ["confirmed", "checked_in"])
+      .order("created_at", { ascending: false })
+      .limit(500);
+    if (error) throw new Error(error.message);
+    return rows ?? [];
+  });
+
 
 // ---------------- Staff: walk-in reservation ----------------
 const walkInSchema = bookingSchema;
