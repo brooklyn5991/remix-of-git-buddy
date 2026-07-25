@@ -40,7 +40,14 @@ export function SiteNav() {
             >
               Lead
             </Link>
+            <Link
+              to="/admin"
+              className="text-[11px] font-medium uppercase tracking-[0.2em] text-gold-light/50 hover:text-gold transition-colors"
+            >
+              Admin
+            </Link>
           </div>
+
 
 
           <Link
@@ -95,9 +102,17 @@ export function SiteNav() {
             onClick={() => setOpen(false)}
             className="py-3 text-xs font-medium uppercase tracking-[0.25em] text-gold-light/50 hover:text-gold transition-colors"
           >
-            Lead Portal
+            Lead
+          </Link>
+          <Link
+            to="/admin"
+            onClick={() => setOpen(false)}
+            className="py-3 text-xs font-medium uppercase tracking-[0.25em] text-gold-light/50 hover:text-gold transition-colors"
+          >
+            Admin
           </Link>
         </div>
+
       </div>
     </nav>
   );
