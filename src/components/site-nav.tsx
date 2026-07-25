@@ -40,7 +40,14 @@ export function SiteNav() {
             >
               Lead
             </Link>
+            <Link
+              to="/admin"
+              className="text-[11px] font-medium uppercase tracking-[0.2em] text-gold-light/50 hover:text-gold transition-colors"
+            >
+              Admin
+            </Link>
           </div>
+
 
 
           <Link
