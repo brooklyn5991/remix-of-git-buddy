@@ -1,6 +1,7 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import {
   listReservations,
@@ -32,6 +33,18 @@ function Dashboard() {
   const role = useQuery({ queryKey: ["role"], queryFn: () => fetchRole() });
   const rooms = useQuery({ queryKey: ["rooms"], queryFn: () => fetchRooms() });
   const reservations = useQuery({ queryKey: ["reservations"], queryFn: () => fetchRes() });
+
+  useEffect(() => {
+    const channel = supabase
+      .channel("lead-reservations")
+      .on("postgres_changes", { event: "*", schema: "public", table: "reservations" }, () => {
+        qc.invalidateQueries({ queryKey: ["reservations"] });
+        qc.invalidateQueries({ queryKey: ["rooms"] });
+      })
+      .subscribe();
+
+    return () => { supabase.removeChannel(channel); };
+  }, [qc]);
 
   const statusMut = useMutation({
     mutationFn: (v: { id: string; status: "confirmed" | "checked_in" | "checked_out" | "cancelled" }) =>
