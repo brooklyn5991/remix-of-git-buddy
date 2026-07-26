@@ -3,7 +3,6 @@ import { useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { z } from "zod";
-import PaystackPop from "@paystack/inline-js";
 import { SiteNav } from "@/components/site-nav";
 import { SiteFooter } from "@/components/site-footer";
 import { listRooms, createOnlineReservation, getBookedRoomIds, verifyPaystackPayment, cancelPendingReservation } from "@/lib/hotel.functions";
@@ -80,6 +79,7 @@ function RoomDetail() {
         return;
       }
       try {
+        const PaystackPop = (await import("@paystack/inline-js")).default;
         const paystack = new PaystackPop();
         setProcessing(true);
         paystack.newTransaction({
@@ -90,8 +90,11 @@ function RoomDetail() {
           channels: ["card"],
           metadata: {
             guest_name: name,
+            guest_email: email,
             whatsapp_phone: phone,
             room_category: room?.tier,
+            check_in: checkIn,
+            check_out: checkOut,
             reservation_id: res.id,
             confirmation_code: res.confirmation_code,
           },
