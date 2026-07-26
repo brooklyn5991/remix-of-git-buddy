@@ -1,7 +1,7 @@
 import { createFileRoute, Link, notFound, useNavigate } from "@tanstack/react-router";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { z } from "zod";
 import PaystackPop from "@paystack/inline-js";
 import { SiteNav } from "@/components/site-nav";
@@ -9,6 +9,7 @@ import { SiteFooter } from "@/components/site-footer";
 import { confirmPaystackBookingByTier, listRooms, getBookedRoomIds } from "@/lib/hotel.functions";
 import { roomImage } from "@/lib/room-images";
 import { openBookingNotifications } from "@/lib/booking-notify";
+import { supabase } from "@/integrations/supabase/client";
 
 const currency = (n: number) =>
   new Intl.NumberFormat("en-NG", { style: "currency", currency: "NGN", maximumFractionDigits: 0 }).format(n);
@@ -44,6 +45,7 @@ export const Route = createFileRoute("/book/$tier")({
 });
 
 function BookTier() {
+  const queryClient = useQueryClient();
   const { tier: tierParam } = Route.useParams();
   const search = Route.useSearch();
   const navigate = useNavigate();
@@ -151,6 +153,17 @@ function BookTier() {
     onMutate: () => setPayError(null),
     onError: (err: Error) => setPayError(err.message),
   });
+
+  useEffect(() => {
+    const channel = supabase
+      .channel(`book-${tierName}-availability`)
+      .on("postgres_changes", { event: "*", schema: "public", table: "reservations" }, () => {
+        queryClient.invalidateQueries({ queryKey: ["booked"] });
+      })
+      .subscribe();
+
+    return () => { supabase.removeChannel(channel); };
+  }, [queryClient, tierName]);
 
   if (roomsQuery.isLoading) {
     return (
