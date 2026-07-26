@@ -3,7 +3,6 @@ import { useEffect, useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { z } from "zod";
-import PaystackPop from "@paystack/inline-js";
 import { SiteNav } from "@/components/site-nav";
 import { SiteFooter } from "@/components/site-footer";
 import { confirmPaystackBookingByTier, listRooms, getBookedRoomIds } from "@/lib/hotel.functions";
@@ -100,6 +99,7 @@ function BookTier() {
       }
 
       try {
+        const PaystackPop = (await import("@paystack/inline-js")).default;
         await new Promise<void>((resolve, reject) => {
         const paystack = new PaystackPop();
         setProcessing(true);
