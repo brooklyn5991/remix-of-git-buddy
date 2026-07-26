@@ -1,13 +1,18 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { createHmac, timingSafeEqual } from "node:crypto";
-import { extractFulfillFromMetadata, fulfillPaystackReservation } from "@/lib/paystack-fulfill.server";
+import { extractFulfillFromMetadata, fulfillPaystackReservation, getPaystackSecret } from "@/lib/paystack-fulfill.server";
 
 export const Route = createFileRoute("/api/public/paystack/webhook")({
   server: {
     handlers: {
       POST: async ({ request }) => {
-        const secret = process.env.PAYSTACK_SECRET_KEY;
-        if (!secret) return new Response("Not configured", { status: 500 });
+        let secret: string;
+        try {
+          secret = await getPaystackSecret();
+        } catch (e) {
+          console.error("paystack webhook: secret missing", e);
+          return new Response("Not configured", { status: 500 });
+        }
 
         const raw = await request.text();
         const sig = request.headers.get("x-paystack-signature") ?? "";

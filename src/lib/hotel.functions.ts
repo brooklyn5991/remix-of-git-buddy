@@ -253,8 +253,8 @@ export const verifySquadPayment = createServerFn({ method: "POST" })
 export const verifyPaystackPayment = createServerFn({ method: "POST" })
   .inputValidator((d: unknown) => verifySchema.parse(d))
   .handler(async ({ data }) => {
-    const secret = process.env.PAYSTACK_SECRET_KEY;
-    if (!secret) throw new Error("Paystack secret key not configured on the server.");
+    const { getPaystackSecret } = await import("@/lib/paystack-fulfill.server");
+    const secret = await getPaystackSecret();
     const sb = publicClient();
     const { data: reservation, error: rErr } = await sb
       .from("reservations")

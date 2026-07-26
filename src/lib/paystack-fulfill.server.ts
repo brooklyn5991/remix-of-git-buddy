@@ -50,6 +50,21 @@ async function verifyPaystack(reference: string, secret: string) {
   return body.data;
 }
 
+export async function getPaystackSecret(): Promise<string> {
+  const envSecret = process.env.PAYSTACK_SECRET_KEY?.trim();
+  if (envSecret) return envSecret;
+
+  const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+  const { data, error } = await supabaseAdmin.rpc("get_backend_secret", { secret_name: "PAYSTACK_SECRET_KEY" });
+  const vaultSecret = typeof data === "string" ? data.trim() : "";
+  if (vaultSecret) return vaultSecret;
+
+  if (error) {
+    console.error("Paystack secret lookup failed", error.message);
+  }
+  throw new Error("Paystack secret key not configured on the server.");
+}
+
 function parseMetadata(md: Record<string, unknown> | string | null | undefined): Record<string, unknown> {
   if (!md) return {};
   if (typeof md === "string") {
@@ -63,8 +78,7 @@ function parseMetadata(md: Record<string, unknown> | string | null | undefined):
  * already present. Returns the reservation row. Safe to call multiple times.
  */
 export async function fulfillPaystackReservation(input: FulfillInput): Promise<FulfilledReservation> {
-  const secret = process.env.PAYSTACK_SECRET_KEY;
-  if (!secret) throw new Error("Paystack secret key not configured on the server.");
+  const secret = await getPaystackSecret();
   if (new Date(input.check_out) <= new Date(input.check_in)) {
     throw new Error("Check-out must be after check-in");
   }
