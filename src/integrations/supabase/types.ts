@@ -208,6 +208,7 @@ export type Database = {
     }
     Functions: {
       auto_checkout_past_reservations: { Args: never; Returns: number }
+      get_backend_secret: { Args: { secret_name: string }; Returns: string }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
