@@ -1,11 +1,12 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { SiteNav } from "@/components/site-nav";
 import { SiteFooter } from "@/components/site-footer";
 import { listRooms, getBookedRoomIds } from "@/lib/hotel.functions";
 import { roomImage } from "@/lib/room-images";
+import { supabase } from "@/integrations/supabase/client";
 
 const currency = (n: number) =>
   new Intl.NumberFormat("en-NG", { style: "currency", currency: "NGN", maximumFractionDigits: 0 }).format(n);
@@ -25,6 +26,7 @@ export const Route = createFileRoute("/rooms/")({
 });
 
 function RoomsPage() {
+  const queryClient = useQueryClient();
   const fetchRooms = useServerFn(listRooms);
   const fetchBooked = useServerFn(getBookedRoomIds);
 
@@ -40,6 +42,17 @@ function RoomsPage() {
 
   const bookedSet = useMemo(() => new Set(bookedQuery.data ?? []), [bookedQuery.data]);
   const rooms = roomsQuery.data ?? [];
+
+  useEffect(() => {
+    const channel = supabase
+      .channel("rooms-availability")
+      .on("postgres_changes", { event: "*", schema: "public", table: "reservations" }, () => {
+        queryClient.invalidateQueries({ queryKey: ["booked"] });
+      })
+      .subscribe();
+
+    return () => { supabase.removeChannel(channel); };
+  }, [queryClient]);
 
   const tiers = useMemo(() => {
     return TIER_ORDER.map((tier) => {
