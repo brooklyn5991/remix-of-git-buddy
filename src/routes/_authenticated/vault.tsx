@@ -19,6 +19,7 @@ function Vault() {
   const fetchComplaints = useServerFn(listComplaints);
   const fetchRole = useServerFn(myRole);
   const mark = useServerFn(markComplaintRead);
+  const remove = useServerFn(deleteComplaint);
 
   const role = useQuery({ queryKey: ["role"], queryFn: () => fetchRole() });
   const stats = useQuery({ queryKey: ["ownerStats"], queryFn: () => fetchStats(), enabled: !!role.data?.isOwner });
@@ -30,6 +31,11 @@ function Vault() {
 
   const markMut = useMutation({
     mutationFn: (id: string) => mark({ data: { id } }),
+    onSuccess: () => qc.invalidateQueries({ queryKey: ["complaints"] }),
+  });
+
+  const deleteMut = useMutation({
+    mutationFn: (id: string) => remove({ data: { id } }),
     onSuccess: () => qc.invalidateQueries({ queryKey: ["complaints"] }),
   });
 
