@@ -3,7 +3,7 @@
 // a verified payment. Real one-click send requires a WhatsApp Business API
 // provider — deep links are the pragmatic, zero-cost baseline.
 
-const STAFF_WA_NUMBER = "2348103129471"; // 08103129471 in international format
+const STAFF_WA_NUMBER = "2349064050424"; // 09064050424 in international format
 const HOTEL_ADDRESS = "52 New Sapele/Agbor Road, Obiaruku, Delta State";
 
 const currency = (n: number) =>
