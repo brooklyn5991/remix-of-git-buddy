@@ -6,7 +6,6 @@ import { SiteNav } from "@/components/site-nav";
 import { SiteFooter } from "@/components/site-footer";
 import { listRooms, getBookedRoomIds } from "@/lib/hotel.functions";
 import { roomImage } from "@/lib/room-images";
-import { supabase } from "@/integrations/supabase/client";
 
 const currency = (n: number) =>
   new Intl.NumberFormat("en-NG", { style: "currency", currency: "NGN", maximumFractionDigits: 0 }).format(n);

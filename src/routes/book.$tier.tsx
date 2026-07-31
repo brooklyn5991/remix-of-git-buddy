@@ -8,7 +8,6 @@ import { SiteFooter } from "@/components/site-footer";
 import { confirmPaystackBookingByTier, listRooms, getBookedRoomIds } from "@/lib/hotel.functions";
 import { roomImage } from "@/lib/room-images";
 import { openBookingNotifications } from "@/lib/booking-notify";
-import { supabase } from "@/integrations/supabase/client";
 
 const currency = (n: number) =>
   new Intl.NumberFormat("en-NG", { style: "currency", currency: "NGN", maximumFractionDigits: 0 }).format(n);
