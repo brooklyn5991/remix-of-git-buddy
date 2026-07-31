@@ -2,7 +2,7 @@ import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { ownerStats, listComplaints, markComplaintRead, myRole } from "@/lib/hotel.functions";
+import { ownerStats, listComplaints, markComplaintRead, deleteComplaint, myRole } from "@/lib/hotel.functions";
 
 const currency = (n: number) =>
   new Intl.NumberFormat("en-NG", { style: "currency", currency: "NGN", maximumFractionDigits: 0 }).format(n);
@@ -19,6 +19,7 @@ function Vault() {
   const fetchComplaints = useServerFn(listComplaints);
   const fetchRole = useServerFn(myRole);
   const mark = useServerFn(markComplaintRead);
+  const remove = useServerFn(deleteComplaint);
 
   const role = useQuery({ queryKey: ["role"], queryFn: () => fetchRole() });
   const stats = useQuery({ queryKey: ["ownerStats"], queryFn: () => fetchStats(), enabled: !!role.data?.isOwner });
@@ -30,6 +31,11 @@ function Vault() {
 
   const markMut = useMutation({
     mutationFn: (id: string) => mark({ data: { id } }),
+    onSuccess: () => qc.invalidateQueries({ queryKey: ["complaints"] }),
+  });
+
+  const deleteMut = useMutation({
+    mutationFn: (id: string) => remove({ data: { id } }),
     onSuccess: () => qc.invalidateQueries({ queryKey: ["complaints"] }),
   });
 
@@ -157,14 +163,27 @@ function Vault() {
                       {c.guest_name} · {c.guest_contact} · {new Date(c.created_at).toLocaleString()}
                     </p>
                   </div>
-                  {!c.is_read && (
-                    <button
-                      onClick={() => markMut.mutate(c.id)}
-                      className="text-[10px] uppercase tracking-[0.2em] text-gold border border-gold/40 px-3 py-1 hover:bg-gold hover:text-deep"
-                    >
-                      Mark read
-                    </button>
-                  )}
+                  <div className="flex items-center gap-2 shrink-0">
+                    {!c.is_read && (
+                      <button
+                        onClick={() => markMut.mutate(c.id)}
+                        className="text-[10px] uppercase tracking-[0.2em] text-gold border border-gold/40 px-3 py-1 hover:bg-gold hover:text-deep"
+                      >
+                        Mark read
+                      </button>
+                    )}
+                    {c.is_read && (
+                      <button
+                        onClick={() => {
+                          if (confirm("Delete this complaint permanently?")) deleteMut.mutate(c.id);
+                        }}
+                        disabled={deleteMut.isPending}
+                        className="text-[10px] uppercase tracking-[0.2em] text-red-300 border border-red-400/40 px-3 py-1 hover:bg-red-400 hover:text-deep disabled:opacity-50"
+                      >
+                        Delete
+                      </button>
+                    )}
+                  </div>
                 </div>
                 <p className="text-sm text-zinc-300 whitespace-pre-wrap">{c.message}</p>
               </div>

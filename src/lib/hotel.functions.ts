@@ -542,6 +542,18 @@ export const markComplaintRead = createServerFn({ method: "POST" })
     return { ok: true };
   });
 
+export const deleteComplaint = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((d: unknown) => z.object({ id: z.string().uuid() }).parse(d))
+  .handler(async ({ data, context }) => {
+    const { error } = await context.supabase
+      .from("complaints")
+      .delete()
+      .eq("id", data.id);
+    if (error) throw new Error(error.message);
+    return { ok: true };
+  });
+
 // ---------------- Owner: revenue stats ----------------
 export const ownerStats = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
