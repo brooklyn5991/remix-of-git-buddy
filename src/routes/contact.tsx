@@ -134,7 +134,7 @@ function ContactPage() {
             </div>
 
             <a
-              href="https://wa.me/2348103129471"
+              href="https://wa.me/2349064050424"
               target="_blank"
               rel="noopener noreferrer"
               className="flex items-center gap-3 bg-[#25D366]/10 ring-1 ring-[#25D366]/30 p-4 hover:bg-[#25D366]/15 transition-all active:scale-[0.98] duration-300 animate-fade-in-up delay-400 hover-lift min-w-0"
