@@ -16,7 +16,9 @@ export const Route = createFileRoute("/_authenticated/vault")({
 
 function Vault() {
   const qc = useQueryClient();
+  const [confirmId, setConfirmId] = useState<string | null>(null);
   const navigate = useNavigate();
+
   const fetchStats = useServerFn(ownerStats);
   const fetchComplaints = useServerFn(listComplaints);
   const fetchRole = useServerFn(myRole);
