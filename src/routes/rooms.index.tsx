@@ -6,7 +6,6 @@ import { SiteNav } from "@/components/site-nav";
 import { SiteFooter } from "@/components/site-footer";
 import { listRooms, getBookedRoomIds } from "@/lib/hotel.functions";
 import { roomImage } from "@/lib/room-images";
-import { supabase } from "@/integrations/supabase/client";
 
 const currency = (n: number) =>
   new Intl.NumberFormat("en-NG", { style: "currency", currency: "NGN", maximumFractionDigits: 0 }).format(n);
@@ -43,15 +42,13 @@ function RoomsPage() {
   const bookedSet = useMemo(() => new Set(bookedQuery.data ?? []), [bookedQuery.data]);
   const rooms = roomsQuery.data ?? [];
 
+  // Reservation rows are private (no anon read access), so availability is
+  // refreshed by polling instead of realtime.
   useEffect(() => {
-    const channel = supabase
-      .channel("rooms-availability")
-      .on("postgres_changes", { event: "*", schema: "public", table: "reservations" }, () => {
-        queryClient.invalidateQueries({ queryKey: ["booked"] });
-      })
-      .subscribe();
-
-    return () => { supabase.removeChannel(channel); };
+    const t = setInterval(() => {
+      queryClient.invalidateQueries({ queryKey: ["booked"] });
+    }, 20000);
+    return () => clearInterval(t);
   }, [queryClient]);
 
   const tiers = useMemo(() => {
