@@ -2,7 +2,7 @@ import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { ownerStats, listComplaints, markComplaintRead, myRole } from "@/lib/hotel.functions";
+import { ownerStats, listComplaints, markComplaintRead, deleteComplaint, myRole } from "@/lib/hotel.functions";
 
 const currency = (n: number) =>
   new Intl.NumberFormat("en-NG", { style: "currency", currency: "NGN", maximumFractionDigits: 0 }).format(n);
