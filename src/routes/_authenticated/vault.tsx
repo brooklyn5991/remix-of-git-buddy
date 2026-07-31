@@ -1,6 +1,8 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+
 import { supabase } from "@/integrations/supabase/client";
 import { ownerStats, listComplaints, markComplaintRead, deleteComplaint, myRole } from "@/lib/hotel.functions";
 
@@ -14,7 +16,9 @@ export const Route = createFileRoute("/_authenticated/vault")({
 
 function Vault() {
   const qc = useQueryClient();
+  const [confirmId, setConfirmId] = useState<string | null>(null);
   const navigate = useNavigate();
+
   const fetchStats = useServerFn(ownerStats);
   const fetchComplaints = useServerFn(listComplaints);
   const fetchRole = useServerFn(myRole);
@@ -172,17 +176,35 @@ function Vault() {
                         Mark read
                       </button>
                     )}
-                    {c.is_read && (
-                      <button
-                        onClick={() => {
-                          if (confirm("Delete this complaint permanently?")) deleteMut.mutate(c.id);
-                        }}
-                        disabled={deleteMut.isPending}
-                        className="text-[10px] uppercase tracking-[0.2em] text-red-300 border border-red-400/40 px-3 py-1 hover:bg-red-400 hover:text-deep disabled:opacity-50"
-                      >
-                        Delete
-                      </button>
-                    )}
+                    {c.is_read &&
+                      (confirmId === c.id ? (
+                        <>
+                          <button
+                            onClick={() => {
+                              setConfirmId(null);
+                              deleteMut.mutate(c.id);
+                            }}
+                            disabled={deleteMut.isPending}
+                            className="text-[10px] uppercase tracking-[0.2em] text-deep bg-red-400 px-3 py-1 disabled:opacity-50"
+                          >
+                            {deleteMut.isPending ? "Deleting…" : "Confirm"}
+                          </button>
+                          <button
+                            onClick={() => setConfirmId(null)}
+                            className="text-[10px] uppercase tracking-[0.2em] text-zinc-400 border border-zinc-600 px-3 py-1"
+                          >
+                            Cancel
+                          </button>
+                        </>
+                      ) : (
+                        <button
+                          onClick={() => setConfirmId(c.id)}
+                          className="text-[10px] uppercase tracking-[0.2em] text-red-300 border border-red-400/40 px-3 py-1 hover:bg-red-400 hover:text-deep"
+                        >
+                          Delete
+                        </button>
+                      ))}
+
                   </div>
                 </div>
                 <p className="text-sm text-zinc-300 whitespace-pre-wrap">{c.message}</p>
