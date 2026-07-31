@@ -127,14 +127,14 @@ function ContactPage() {
 
             <div className="bg-warm/5 ring-1 ring-gold/10 p-5 sm:p-8 space-y-4 animate-fade-in-up delay-300 hover-glow">
               <p className="text-[10px] uppercase tracking-[0.4em] text-gold mb-2">The House</p>
-              <Info label="Reception" value="+234 (0) 800 000 0000" />
+              <Info label="Reception" value="+234 906 405 0424" />
               <Info label="Check-in" value="3:00 PM daily" />
               <Info label="Check-out" value="11:00 AM daily" />
               <Info label="Address" value="52 New Sapele/Agbor Road, Obiaruku, Delta State" />
             </div>
 
             <a
-              href="https://wa.me/2348103129471"
+              href="https://wa.me/2349064050424"
               target="_blank"
               rel="noopener noreferrer"
               className="flex items-center gap-3 bg-[#25D366]/10 ring-1 ring-[#25D366]/30 p-4 hover:bg-[#25D366]/15 transition-all active:scale-[0.98] duration-300 animate-fade-in-up delay-400 hover-lift min-w-0"
@@ -144,7 +144,7 @@ function ContactPage() {
               </svg>
               <div>
                 <p className="text-[10px] uppercase tracking-[0.3em] text-gold/60 mb-1">WhatsApp</p>
-                <p className="text-sm text-gold-light font-medium">+234 810 312 9471</p>
+                <p className="text-sm text-gold-light font-medium">+234 906 405 0424</p>
               </div>
             </a>
           </aside>
