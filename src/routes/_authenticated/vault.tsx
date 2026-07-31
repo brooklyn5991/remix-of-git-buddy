@@ -172,17 +172,35 @@ function Vault() {
                         Mark read
                       </button>
                     )}
-                    {c.is_read && (
-                      <button
-                        onClick={() => {
-                          if (confirm("Delete this complaint permanently?")) deleteMut.mutate(c.id);
-                        }}
-                        disabled={deleteMut.isPending}
-                        className="text-[10px] uppercase tracking-[0.2em] text-red-300 border border-red-400/40 px-3 py-1 hover:bg-red-400 hover:text-deep disabled:opacity-50"
-                      >
-                        Delete
-                      </button>
-                    )}
+                    {c.is_read &&
+                      (confirmId === c.id ? (
+                        <>
+                          <button
+                            onClick={() => {
+                              setConfirmId(null);
+                              deleteMut.mutate(c.id);
+                            }}
+                            disabled={deleteMut.isPending}
+                            className="text-[10px] uppercase tracking-[0.2em] text-deep bg-red-400 px-3 py-1 disabled:opacity-50"
+                          >
+                            {deleteMut.isPending ? "Deleting…" : "Confirm"}
+                          </button>
+                          <button
+                            onClick={() => setConfirmId(null)}
+                            className="text-[10px] uppercase tracking-[0.2em] text-zinc-400 border border-zinc-600 px-3 py-1"
+                          >
+                            Cancel
+                          </button>
+                        </>
+                      ) : (
+                        <button
+                          onClick={() => setConfirmId(c.id)}
+                          className="text-[10px] uppercase tracking-[0.2em] text-red-300 border border-red-400/40 px-3 py-1 hover:bg-red-400 hover:text-deep"
+                        >
+                          Delete
+                        </button>
+                      ))}
+
                   </div>
                 </div>
                 <p className="text-sm text-zinc-300 whitespace-pre-wrap">{c.message}</p>
