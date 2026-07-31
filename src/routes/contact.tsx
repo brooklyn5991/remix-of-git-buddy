@@ -144,7 +144,7 @@ function ContactPage() {
               </svg>
               <div>
                 <p className="text-[10px] uppercase tracking-[0.3em] text-gold/60 mb-1">WhatsApp</p>
-                <p className="text-sm text-gold-light font-medium">+234 810 312 9471</p>
+                <p className="text-sm text-gold-light font-medium">+234 906 405 0424</p>
               </div>
             </a>
           </aside>
