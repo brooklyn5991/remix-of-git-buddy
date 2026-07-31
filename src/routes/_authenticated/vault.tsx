@@ -163,14 +163,27 @@ function Vault() {
                       {c.guest_name} · {c.guest_contact} · {new Date(c.created_at).toLocaleString()}
                     </p>
                   </div>
-                  {!c.is_read && (
-                    <button
-                      onClick={() => markMut.mutate(c.id)}
-                      className="text-[10px] uppercase tracking-[0.2em] text-gold border border-gold/40 px-3 py-1 hover:bg-gold hover:text-deep"
-                    >
-                      Mark read
-                    </button>
-                  )}
+                  <div className="flex items-center gap-2 shrink-0">
+                    {!c.is_read && (
+                      <button
+                        onClick={() => markMut.mutate(c.id)}
+                        className="text-[10px] uppercase tracking-[0.2em] text-gold border border-gold/40 px-3 py-1 hover:bg-gold hover:text-deep"
+                      >
+                        Mark read
+                      </button>
+                    )}
+                    {c.is_read && (
+                      <button
+                        onClick={() => {
+                          if (confirm("Delete this complaint permanently?")) deleteMut.mutate(c.id);
+                        }}
+                        disabled={deleteMut.isPending}
+                        className="text-[10px] uppercase tracking-[0.2em] text-red-300 border border-red-400/40 px-3 py-1 hover:bg-red-400 hover:text-deep disabled:opacity-50"
+                      >
+                        Delete
+                      </button>
+                    )}
+                  </div>
                 </div>
                 <p className="text-sm text-zinc-300 whitespace-pre-wrap">{c.message}</p>
               </div>
