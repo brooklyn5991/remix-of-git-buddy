@@ -154,16 +154,14 @@ function BookTier() {
     onError: (err: Error) => setPayError(err.message),
   });
 
+  // Reservation rows are private (no anon read access), so availability is
+  // refreshed by polling instead of realtime.
   useEffect(() => {
-    const channel = supabase
-      .channel(`book-${tierName}-availability`)
-      .on("postgres_changes", { event: "*", schema: "public", table: "reservations" }, () => {
-        queryClient.invalidateQueries({ queryKey: ["booked"] });
-      })
-      .subscribe();
-
-    return () => { supabase.removeChannel(channel); };
-  }, [queryClient, tierName]);
+    const t = setInterval(() => {
+      queryClient.invalidateQueries({ queryKey: ["booked"] });
+    }, 20000);
+    return () => clearInterval(t);
+  }, [queryClient]);
 
   if (roomsQuery.isLoading) {
     return (
