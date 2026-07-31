@@ -12,6 +12,12 @@ function publicClient() {
   );
 }
 
+/** Privileged server-side client. Reservation data is never exposed to anon
+ * clients directly; all reads/writes are mediated by these validated handlers. */
+async function serverDb() {
+  const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+  return supabaseAdmin;
+}
 
 // ---------------- Public: list rooms ----------------
 export const listRooms = createServerFn({ method: "GET" }).handler(async () => {
@@ -33,7 +39,7 @@ const rangeSchema = z.object({
 export const getBookedRoomIds = createServerFn({ method: "POST" })
   .inputValidator((d: unknown) => rangeSchema.parse(d))
   .handler(async ({ data }) => {
-    const sb = publicClient();
+    const sb = await serverDb();
     const { data: rows, error } = await sb
       .from("reservations")
       .select("room_id, check_in, check_out, status")
@@ -60,7 +66,7 @@ export const createOnlineReservation = createServerFn({ method: "POST" })
     if (new Date(data.check_out) <= new Date(data.check_in)) {
       throw new Error("Check-out must be after check-in");
     }
-    const sb = publicClient();
+    const sb = await serverDb();
     const { data: room, error: rErr } = await sb
       .from("rooms")
       .select("id, price_ngn, room_number, name")
@@ -119,7 +125,7 @@ export const createReservationByTier = createServerFn({ method: "POST" })
     if (new Date(data.check_out) <= new Date(data.check_in)) {
       throw new Error("Check-out must be after check-in");
     }
-    const sb = publicClient();
+    const sb = await serverDb();
     const { data: tierRooms, error: tErr } = await sb
       .from("rooms")
       .select("id, price_ngn, room_number, name")
@@ -193,7 +199,7 @@ const settleSchema = z.object({
 export const settleFakePayment = createServerFn({ method: "POST" })
   .inputValidator((d: unknown) => settleSchema.parse(d))
   .handler(async ({ data }) => {
-    const sb = publicClient();
+    const sb = await serverDb();
     const reference = "FAKE-SQD-" + Math.random().toString(36).slice(2, 10).toUpperCase();
     const { data: updated, error } = await sb
       .from("reservations")
@@ -218,7 +224,7 @@ const verifySchema = z.object({
 export const verifySquadPayment = createServerFn({ method: "POST" })
   .inputValidator((d: unknown) => verifySchema.parse(d))
   .handler(async ({ data }) => {
-    const sb = publicClient();
+    const sb = await serverDb();
     if (data.reference.startsWith("FAKE-SQD-")) {
       const { error: uErr } = await sb.from("reservations")
         .update({ payment_status: "paid", payment_reference: data.reference, status: "confirmed" })
@@ -255,7 +261,7 @@ export const verifyPaystackPayment = createServerFn({ method: "POST" })
   .handler(async ({ data }) => {
     const { getPaystackSecret } = await import("@/lib/paystack-fulfill.server");
     const secret = await getPaystackSecret();
-    const sb = publicClient();
+    const sb = await serverDb();
     const { data: reservation, error: rErr } = await sb
       .from("reservations")
       .select("id, total_ngn, guest_name, guest_email, guest_phone, check_in, check_out, confirmation_code, rooms(room_number, tier, name)")
@@ -330,7 +336,7 @@ export const confirmPaystackBookingByTier = createServerFn({ method: "POST" })
 export const cancelPendingReservation = createServerFn({ method: "POST" })
   .inputValidator((d: unknown) => z.object({ reservation_id: z.string().uuid() }).parse(d))
   .handler(async ({ data }) => {
-    const sb = publicClient();
+    const sb = await serverDb();
     const { error } = await sb
       .from("reservations")
       .update({ status: "cancelled", payment_status: "failed" })
@@ -345,7 +351,7 @@ export const cancelPendingReservation = createServerFn({ method: "POST" })
 export const getReservation = createServerFn({ method: "POST" })
   .inputValidator((d: unknown) => z.object({ id: z.string().uuid() }).parse(d))
   .handler(async ({ data }) => {
-    const sb = publicClient();
+    const sb = await serverDb();
     const { data: row, error } = await sb
       .from("reservations")
       .select("id, guest_name, guest_email, check_in, check_out, total_ngn, payment_status, status, confirmation_code, rooms(room_number, name)")
