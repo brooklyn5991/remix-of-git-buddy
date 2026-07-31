@@ -127,7 +127,7 @@ function ContactPage() {
 
             <div className="bg-warm/5 ring-1 ring-gold/10 p-5 sm:p-8 space-y-4 animate-fade-in-up delay-300 hover-glow">
               <p className="text-[10px] uppercase tracking-[0.4em] text-gold mb-2">The House</p>
-              <Info label="Reception" value="+234 (0) 800 000 0000" />
+              <Info label="Reception" value="+234 906 405 0424" />
               <Info label="Check-in" value="3:00 PM daily" />
               <Info label="Check-out" value="11:00 AM daily" />
               <Info label="Address" value="52 New Sapele/Agbor Road, Obiaruku, Delta State" />
