@@ -1,6 +1,8 @@
-import roomStandard from "@/assets/room-standard.jpg";
-import roomDeluxe from "@/assets/room-deluxe.jpg";
-import roomExecutive from "@/assets/room-executive.jpg";
+import {
+  roomStandardImg as roomStandard,
+  roomDeluxeImg as roomDeluxe,
+  roomExecutiveImg as roomExecutive,
+} from "@/lib/room-images";
 
 export type Room = {
   slug: string;
