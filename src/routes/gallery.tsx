@@ -7,9 +7,12 @@ import dining from "@/assets/dining.jpeg";
 import exterior from "@/assets/exterior.jpg";
 import bar from "@/assets/bar.jpg";
 import bathroom from "@/assets/bathroom.jpg";
-import roomExecutive from "@/assets/room-executive.jpg";
-import roomDeluxe from "@/assets/room-deluxe.jpg";
-import roomStandard from "@/assets/room-standard.jpg";
+import {
+  roomExecutiveImg as roomExecutive,
+  roomDeluxeImg as roomDeluxe,
+  roomStandardImg as roomStandard,
+  roomSuiteImg as roomSuite,
+} from "@/lib/room-images";
 
 export const Route = createFileRoute("/gallery")({
   head: () => ({
@@ -37,6 +40,7 @@ const items = [
   { src: roomDeluxe, alt: "Deluxe Room", caption: "Deluxe Room", span: "" },
   { src: bathroom, alt: "Walk-in shower bath", caption: "The Bath", span: "" },
   { src: roomStandard, alt: "Standard Room", caption: "Standard Room", span: "md:col-span-2" },
+  { src: roomSuite, alt: "The Suite", caption: "The Suite", span: "md:col-span-2" },
 ];
 
 function GalleryPage() {
