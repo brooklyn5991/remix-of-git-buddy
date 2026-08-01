@@ -40,6 +40,7 @@ const items = [
   { src: roomDeluxe, alt: "Deluxe Room", caption: "Deluxe Room", span: "" },
   { src: bathroom, alt: "Walk-in shower bath", caption: "The Bath", span: "" },
   { src: roomStandard, alt: "Standard Room", caption: "Standard Room", span: "md:col-span-2" },
+  { src: roomSuite, alt: "The Suite", caption: "The Suite", span: "md:col-span-2" },
 ];
 
 function GalleryPage() {
