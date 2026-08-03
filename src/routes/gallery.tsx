@@ -55,20 +55,21 @@ function GalleryPage() {
           </h1>
         </section>
 
-        <section className="px-4 sm:px-6 max-w-7xl mx-auto animate-scale-in delay-200">
-          <div className="grid grid-cols-1 md:grid-cols-4 auto-rows-[190px] sm:auto-rows-[230px] md:auto-rows-[260px] gap-3">
+        <section className="px-4 sm:px-6 max-w-5xl xl:max-w-6xl mx-auto animate-scale-in delay-200">
+          <div className="grid grid-cols-1 md:grid-cols-4 auto-rows-[190px] sm:auto-rows-[230px] md:auto-rows-[240px] gap-3">
             {items.map((i, idx) => (
               <figure
                 key={i.caption}
-                className={`relative overflow-hidden ring-1 ring-gold/10 group ${i.span} hover-glow animate-fade-in-up`}
+                className={`relative overflow-hidden bg-warm/5 ring-1 ring-gold/10 group ${i.span} hover-glow animate-fade-in-up`}
                 style={{ animationDelay: `${(idx + 1) * 75}ms` }}
               >
                 <img
                   src={i.src}
                   alt={i.alt}
                   loading="lazy"
-                  className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-[1.04]"
+                  className="w-full h-full object-contain transition-transform duration-1000 group-hover:scale-[1.04]"
                 />
+
                 <div className="absolute inset-0 bg-gradient-to-t from-deep/85 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                 <figcaption className="absolute bottom-0 left-0 p-4 text-[10px] uppercase tracking-[0.25em] text-gold-light opacity-0 group-hover:opacity-100 transition-opacity duration-300">
                   {i.caption}
