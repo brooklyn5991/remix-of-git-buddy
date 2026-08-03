@@ -3,8 +3,6 @@ import { SiteNav } from "@/components/site-nav";
 import { SiteFooter } from "@/components/site-footer";
 import heroCourtyard from "@/assets/hero-courtyard.jpg";
 import { roomExecutiveImg as roomExecutive, roomDeluxeImg as roomDeluxe } from "@/lib/room-images";
-import diningImg from "@/assets/dining.jpeg";
-import loungeImg from "@/assets/bar.jpg";
 import gardenImg from "@/assets/garden.jpg";
 
 
