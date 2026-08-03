@@ -3,16 +3,16 @@ import { SiteNav } from "@/components/site-nav";
 import { SiteFooter } from "@/components/site-footer";
 import hero from "@/assets/hero-courtyard.jpg";
 import garden from "@/assets/garden.jpg";
-import dining from "@/assets/dining.jpeg";
 import exterior from "@/assets/exterior.jpg";
-import bar from "@/assets/bar.jpg";
-import bathroom from "@/assets/bathroom.jpg";
 import {
   roomExecutiveImg as roomExecutive,
   roomDeluxeImg as roomDeluxe,
   roomStandardImg as roomStandard,
   roomSuiteImg as roomSuite,
 } from "@/lib/room-images";
+
+const bathroom = "/bathroom.png";
+const showerGel = "/gel.png";
 
 export const Route = createFileRoute("/gallery")({
   head: () => ({
@@ -21,7 +21,7 @@ export const Route = createFileRoute("/gallery")({
       {
         name: "description",
         content:
-          "A visual walk through Garen's Garden — the courtyard, the rooms, the restaurant, the bar, and the quiet details of a house well-kept.",
+          "A visual walk through Garen's Garden — the courtyard, the rooms, and the quiet details of a house well-kept.",
       },
       { property: "og:title", content: "Gallery — Garen's Garden" },
       { property: "og:description", content: "A visual walk through Garen's Garden." },
@@ -35,13 +35,13 @@ const items = [
   { src: exterior, alt: "Exterior at dusk", caption: "Exterior · Dusk", span: "" },
   { src: garden, alt: "Garden", caption: "Garden Path", span: "" },
   { src: roomExecutive, alt: "Executive Suite", caption: "Executive Suite", span: "md:col-span-2" },
-  { src: dining, alt: "Restaurant", caption: "The Restaurant", span: "" },
-  { src: bar, alt: "Cocktail bar", caption: "The Bar", span: "" },
   { src: roomDeluxe, alt: "Deluxe Room", caption: "Deluxe Room", span: "" },
   { src: bathroom, alt: "Walk-in shower bath", caption: "The Bath", span: "" },
   { src: roomStandard, alt: "Standard Room", caption: "Standard Room", span: "md:col-span-2" },
   { src: roomSuite, alt: "The Suite", caption: "The Suite", span: "md:col-span-2" },
+  { src: showerGel, alt: "In-room shower gel amenity", caption: "Shower Gel", span: "" },
 ];
+
 
 function GalleryPage() {
   return (
