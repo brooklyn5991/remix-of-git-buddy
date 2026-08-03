@@ -3,16 +3,16 @@ import { SiteNav } from "@/components/site-nav";
 import { SiteFooter } from "@/components/site-footer";
 import hero from "@/assets/hero-courtyard.jpg";
 import garden from "@/assets/garden.jpg";
-import dining from "@/assets/dining.jpeg";
 import exterior from "@/assets/exterior.jpg";
-import bar from "@/assets/bar.jpg";
-import bathroom from "@/assets/bathroom.jpg";
 import {
   roomExecutiveImg as roomExecutive,
   roomDeluxeImg as roomDeluxe,
   roomStandardImg as roomStandard,
   roomSuiteImg as roomSuite,
 } from "@/lib/room-images";
+
+const bathroom = "/bathroom.png";
+const showerGel = "/gel.png";
 
 export const Route = createFileRoute("/gallery")({
   head: () => ({
@@ -21,7 +21,7 @@ export const Route = createFileRoute("/gallery")({
       {
         name: "description",
         content:
-          "A visual walk through Garen's Garden — the courtyard, the rooms, the restaurant, the bar, and the quiet details of a house well-kept.",
+          "A visual walk through Garen's Garden — the courtyard, the rooms, and the quiet details of a house well-kept.",
       },
       { property: "og:title", content: "Gallery — Garen's Garden" },
       { property: "og:description", content: "A visual walk through Garen's Garden." },
@@ -35,13 +35,13 @@ const items = [
   { src: exterior, alt: "Exterior at dusk", caption: "Exterior · Dusk", span: "" },
   { src: garden, alt: "Garden", caption: "Garden Path", span: "" },
   { src: roomExecutive, alt: "Executive Suite", caption: "Executive Suite", span: "md:col-span-2" },
-  { src: dining, alt: "Restaurant", caption: "The Restaurant", span: "" },
-  { src: bar, alt: "Cocktail bar", caption: "The Bar", span: "" },
   { src: roomDeluxe, alt: "Deluxe Room", caption: "Deluxe Room", span: "" },
   { src: bathroom, alt: "Walk-in shower bath", caption: "The Bath", span: "" },
   { src: roomStandard, alt: "Standard Room", caption: "Standard Room", span: "md:col-span-2" },
   { src: roomSuite, alt: "The Suite", caption: "The Suite", span: "md:col-span-2" },
+  { src: showerGel, alt: "In-room shower gel amenity", caption: "Shower Gel", span: "" },
 ];
+
 
 function GalleryPage() {
   return (
@@ -55,20 +55,21 @@ function GalleryPage() {
           </h1>
         </section>
 
-        <section className="px-4 sm:px-6 max-w-7xl mx-auto animate-scale-in delay-200">
-          <div className="grid grid-cols-1 md:grid-cols-4 auto-rows-[190px] sm:auto-rows-[230px] md:auto-rows-[260px] gap-3">
+        <section className="px-4 sm:px-6 max-w-5xl xl:max-w-6xl mx-auto animate-scale-in delay-200">
+          <div className="grid grid-cols-1 md:grid-cols-4 auto-rows-[190px] sm:auto-rows-[230px] md:auto-rows-[240px] gap-3">
             {items.map((i, idx) => (
               <figure
                 key={i.caption}
-                className={`relative overflow-hidden ring-1 ring-gold/10 group ${i.span} hover-glow animate-fade-in-up`}
+                className={`relative overflow-hidden bg-warm/5 ring-1 ring-gold/10 group ${i.span} hover-glow animate-fade-in-up`}
                 style={{ animationDelay: `${(idx + 1) * 75}ms` }}
               >
                 <img
                   src={i.src}
                   alt={i.alt}
                   loading="lazy"
-                  className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-[1.04]"
+                  className="w-full h-full object-contain transition-transform duration-1000 group-hover:scale-[1.04]"
                 />
+
                 <div className="absolute inset-0 bg-gradient-to-t from-deep/85 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                 <figcaption className="absolute bottom-0 left-0 p-4 text-[10px] uppercase tracking-[0.25em] text-gold-light opacity-0 group-hover:opacity-100 transition-opacity duration-300">
                   {i.caption}
