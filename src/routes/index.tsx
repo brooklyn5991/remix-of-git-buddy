@@ -221,8 +221,6 @@ function Index() {
                   title: "Hospitality & Dining",
                   items: [
                     "Complimentary daily breakfast",
-                    "In-house restaurant · African & continental",
-                    "Premium bar & executive cocktail lounge",
                     "Tranquil garden courtyard",
                   ],
                 },
