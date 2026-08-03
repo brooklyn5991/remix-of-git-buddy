@@ -132,26 +132,8 @@ function Index() {
                 </div>
               </div>
 
-              {/* Gallery Preview: Dining */}
-              <div className="md:col-span-1 bg-warm/10 ring-1 ring-gold/10 p-1 animate-fade-in-up delay-300 hover-lift">
-                <div className="relative w-full h-[240px] md:h-[300px] lg:h-full lg:min-h-[260px] overflow-hidden rounded-[8px] group">
-                  <img
-                    src={loungeImg}
-                    alt="Garen's Garden lounge"
-                    loading="lazy"
-                    width={800}
-                    height={1000}
-                    className="w-full h-full object-cover mobile-blur group-hover:scale-105 transition-transform duration-750"
-                  />
-                  <div className="absolute inset-0 bg-black/50" />
-                  <div className="absolute inset-0 bg-gradient-to-t from-deep/70 via-transparent to-transparent" />
-                  <div className="absolute bottom-4 left-5">
-                    <p className="text-[10px] uppercase tracking-[0.25em] text-gold/80">Dining</p>
-                    <p className="font-serif text-gold-light text-xl">The Lounge</p>
-                    <p className="text-xs uppercase tracking-[0.25em] text-gold/70 mt-1">Coming soon</p>
-                  </div>
-                </div>
-              </div>
+              {/* Gallery Preview: Dining — hidden for now */}
+
 
               {/* Owner Hotline */}
               <div className="md:col-span-1 bg-gold text-deep p-5 sm:p-8 flex flex-col justify-between animate-fade-in-up delay-400 hover-lift">
