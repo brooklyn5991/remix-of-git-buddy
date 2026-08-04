@@ -45,10 +45,18 @@ export const getBookedRoomIds = createServerFn({ method: "POST" })
       .select("room_id, check_in, check_out, status")
       .in("status", ["confirmed", "checked_in"])
       .lt("check_in", data.check_out)
-      .gt("check_out", data.check_in);
+      .gte("check_out", data.check_in);
     if (error) throw new Error(error.message);
-    return (rows ?? []).map((r) => r.room_id as string);
+    return (rows ?? [])
+      .filter((r) =>
+        occupies(
+          { check_in: r.check_in as string, check_out: r.check_out as string },
+          { check_in: data.check_in, check_out: data.check_out },
+        ),
+      )
+      .map((r) => r.room_id as string);
   });
+
 
 
 // ---------------- Public: create online reservation ----------------
