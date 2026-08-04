@@ -1,6 +1,8 @@
 // Server-only helper: verifies a Paystack transaction and creates/returns
 // the corresponding confirmed reservation. Idempotent on payment reference.
 
+import { occupies } from "@/lib/availability";
+
 type Tier = "Standard" | "Deluxe" | "Executive" | "Suite";
 
 export interface FulfillInput {
