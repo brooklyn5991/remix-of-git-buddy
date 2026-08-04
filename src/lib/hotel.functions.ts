@@ -3,6 +3,8 @@ import { z } from "zod";
 import { createClient } from "@supabase/supabase-js";
 import type { Database } from "@/integrations/supabase/types";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
+import { occupies } from "@/lib/availability";
+
 
 function publicClient() {
   return createClient<Database>(
@@ -45,10 +47,18 @@ export const getBookedRoomIds = createServerFn({ method: "POST" })
       .select("room_id, check_in, check_out, status")
       .in("status", ["confirmed", "checked_in"])
       .lt("check_in", data.check_out)
-      .gt("check_out", data.check_in);
+      .gte("check_out", data.check_in);
     if (error) throw new Error(error.message);
-    return (rows ?? []).map((r) => r.room_id as string);
+    return (rows ?? [])
+      .filter((r) =>
+        occupies(
+          { check_in: r.check_in as string, check_out: r.check_out as string },
+          { check_in: data.check_in, check_out: data.check_out },
+        ),
+      )
+      .map((r) => r.room_id as string);
   });
+
 
 
 // ---------------- Public: create online reservation ----------------
@@ -137,12 +147,22 @@ export const createReservationByTier = createServerFn({ method: "POST" })
 
     const { data: overlaps, error: oErr } = await sb
       .from("reservations")
-      .select("room_id")
+      .select("room_id, check_in, check_out")
       .in("status", ["confirmed", "checked_in"])
       .lt("check_in", data.check_out)
-      .gt("check_out", data.check_in);
+      .gte("check_out", data.check_in);
     if (oErr) throw new Error(oErr.message);
-    const bookedIds = new Set((overlaps ?? []).map((r) => r.room_id as string));
+    const bookedIds = new Set(
+      (overlaps ?? [])
+        .filter((r) =>
+          occupies(
+            { check_in: r.check_in as string, check_out: r.check_out as string },
+            { check_in: data.check_in, check_out: data.check_out },
+          ),
+        )
+        .map((r) => r.room_id as string),
+    );
+
 
     const available = tierRooms.filter((r) => !bookedIds.has(r.id));
     if (available.length === 0) throw new Error(`All ${data.tier} rooms are sold out for those dates.`);

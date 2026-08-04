@@ -1,6 +1,8 @@
 // Server-only helper: verifies a Paystack transaction and creates/returns
 // the corresponding confirmed reservation. Idempotent on payment reference.
 
+import { occupies } from "@/lib/availability";
+
 type Tier = "Standard" | "Deluxe" | "Executive" | "Suite";
 
 export interface FulfillInput {
@@ -136,13 +138,23 @@ export async function fulfillPaystackReservation(input: FulfillInput): Promise<F
   const roomIds = tierRooms.map((r) => r.id as string);
   const { data: overlaps, error: overlapsErr } = await supabaseAdmin
     .from("reservations")
-    .select("room_id")
+    .select("room_id, check_in, check_out")
     .in("room_id", roomIds)
     .in("status", ["confirmed", "checked_in"])
     .lt("check_in", input.check_out)
-    .gt("check_out", input.check_in);
+    .gte("check_out", input.check_in);
   if (overlapsErr) throw new Error(overlapsErr.message);
-  const bookedIds = new Set((overlaps ?? []).map((row) => row.room_id as string));
+  const bookedIds = new Set(
+    (overlaps ?? [])
+      .filter((row) =>
+        occupies(
+          { check_in: row.check_in as string, check_out: row.check_out as string },
+          { check_in: input.check_in, check_out: input.check_out },
+        ),
+      )
+      .map((row) => row.room_id as string),
+  );
+
   const availableRooms = tierRooms.filter((r) => !bookedIds.has(r.id as string));
   if (availableRooms.length === 0) throw new Error(`All ${input.tier} rooms are sold out for those dates.`);
 
