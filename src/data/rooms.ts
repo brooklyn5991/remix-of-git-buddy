@@ -39,10 +39,9 @@ export const rooms: Room[] = [
     features: [
       "Queen orthopedic mattress",
       "Split-unit air conditioning",
-      "Smart TV with DSTV / satellite",
-      "En-suite bath with hot water",
-      "Complimentary tea, coffee & kettle",
+      "En-suite bathroom with hot water",
       "High-speed fiber Wi-Fi",
+      "Complimentary breakfast",
     ],
   },
   {
@@ -60,10 +59,10 @@ export const rooms: Room[] = [
       "A larger footprint, a king bed, and a walk-in glass shower. The Deluxe is our most-requested room — the perfect balance of space, comfort, and quiet.",
     features: [
       "King orthopedic mattress",
-      "Walk-in glass shower cubicle",
+      "Single sofa chair & accent table",
+      "En-suite bathroom with hot water",
       "Executive desk & ergonomic chair",
       "Split-unit air conditioning",
-      "Smart TV with DSTV / satellite",
       "Complimentary breakfast",
     ],
   },
@@ -82,12 +81,12 @@ export const rooms: Room[] = [
       "The full expression of Garen's Garden — a spacious suite dressed in warm wood and soft gold light, with a walk-in glass shower, executive workspace, and a private seating corner.",
     features: [
       "King orthopedic mattress",
-      "Walk-in glass shower with rainhead",
-      "Private lounge seating",
+      "Single sofa chair & accent table",
+      "Smart TV with DSTV / satellite",
+      "En-suite bathroom with hot water",
       "Executive desk & ergonomic chair",
-      "Smart TV with premium DSTV package",
       "Priority check-in & turndown service",
-      "Complimentary breakfast & evening tea",
+      "Complimentary breakfast",
     ],
   },
 ];

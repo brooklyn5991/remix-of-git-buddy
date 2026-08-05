@@ -236,10 +236,9 @@ function Index() {
                 {
                   title: "Bath & Refresh",
                   items: [
-                    "En-suite bath, walk-in glass shower",
+                    "En-suite bathroom with hot water",
                     "Water heater system",
                     "Constant hot & cold running water",
-                    "Complimentary tea, coffee & kettle",
                   ],
                 },
                 {
