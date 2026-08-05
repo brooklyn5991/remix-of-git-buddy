@@ -39,10 +39,9 @@ export const rooms: Room[] = [
     features: [
       "Queen orthopedic mattress",
       "Split-unit air conditioning",
-      "Smart TV with DSTV / satellite",
-      "En-suite bath with hot water",
-      "Complimentary tea, coffee & kettle",
+      "En-suite bathroom with hot water",
       "High-speed fiber Wi-Fi",
+      "Complimentary breakfast",
     ],
   },
   {
