@@ -243,3 +243,140 @@ function AdminDashboard({ creds, onSignOut }: { creds: Creds; onSignOut: () => v
     </div>
   );
 }
+
+function methodLabel(m: string | null) {
+  if (m === "cash") return "Cash";
+  if (m === "pos") return "POS";
+  return "Paystack";
+}
+
+const TIERS = ["Standard", "Deluxe", "Executive", "Suite"] as const;
+
+function AdminManualBooking({ creds, onBooked }: { creds: Creds; onBooked: () => void }) {
+  const book = useServerFn(adminCreateManualBooking);
+  const [open, setOpen] = useState(false);
+  const [tier, setTier] = useState<(typeof TIERS)[number]>("Standard");
+  const [guestName, setGuestName] = useState("");
+  const [guestEmail, setGuestEmail] = useState("");
+  const [guestPhone, setGuestPhone] = useState("");
+  const [checkIn, setCheckIn] = useState("");
+  const [checkOut, setCheckOut] = useState("");
+  const [method, setMethod] = useState<"cash" | "pos" | "">("");
+  const [error, setError] = useState<string | null>(null);
+  const [result, setResult] = useState<{ confirmation_code: string; room_number: string } | null>(null);
+
+  const mut = useMutation({
+    mutationFn: () =>
+      book({
+        data: {
+          ...creds,
+          tier,
+          guest_name: guestName.trim(),
+          guest_email: guestEmail.trim(),
+          guest_phone: guestPhone.trim(),
+          check_in: checkIn,
+          check_out: checkOut,
+          payment_method: method as "cash" | "pos",
+        },
+      }),
+    onSuccess: (r) => {
+      setResult({ confirmation_code: r.confirmation_code, room_number: r.room_number });
+      setGuestName(""); setGuestEmail(""); setGuestPhone(""); setCheckIn(""); setCheckOut(""); setMethod("");
+      onBooked();
+    },
+    onError: (e: Error) => setError(e.message),
+  });
+
+  const field = "mt-1 w-full bg-deep border border-gold/30 px-3 py-2 text-sm text-gold-light focus:outline-none focus:border-gold";
+  const label = "block text-[10px] uppercase tracking-[0.2em] text-gold/80";
+
+  return (
+    <section className="ring-1 ring-gold/20 bg-warm/5">
+      <button
+        type="button"
+        onClick={() => setOpen((v) => !v)}
+        className="w-full flex items-center justify-between px-6 py-4 text-left"
+      >
+        <span>
+          <span className="block text-[10px] uppercase tracking-[0.3em] text-gold">Manual Booking</span>
+          <span className="block font-serif text-lg text-gold-light">Walk-in / Offline (Cash or POS)</span>
+        </span>
+        <span className="text-gold text-sm">{open ? "Close" : "New booking"}</span>
+      </button>
+
+      {open && (
+        <form
+          onSubmit={(e) => {
+            e.preventDefault();
+            setError(null);
+            setResult(null);
+            if (!method) { setError("Select a payment method (Cash or POS)."); return; }
+            mut.mutate();
+          }}
+          className="px-6 pb-6 grid gap-4 sm:grid-cols-2"
+        >
+          <label className={label}>
+            Room category
+            <select value={tier} onChange={(e) => setTier(e.target.value as (typeof TIERS)[number])} className={field}>
+              {TIERS.map((t) => <option key={t} value={t}>{t}</option>)}
+            </select>
+          </label>
+
+          <label className={label}>
+            Payment method (required)
+            <select
+              value={method}
+              onChange={(e) => setMethod(e.target.value as "cash" | "pos" | "")}
+              className={field}
+              required
+            >
+              <option value="">Select…</option>
+              <option value="cash">Cash</option>
+              <option value="pos">POS</option>
+            </select>
+          </label>
+
+          <label className={label}>
+            Guest name
+            <input value={guestName} onChange={(e) => setGuestName(e.target.value)} className={field} required minLength={2} />
+          </label>
+          <label className={label}>
+            Guest email
+            <input type="email" value={guestEmail} onChange={(e) => setGuestEmail(e.target.value)} className={field} required />
+          </label>
+          <label className={label}>
+            WhatsApp number
+            <input value={guestPhone} onChange={(e) => setGuestPhone(e.target.value)} className={field} required minLength={6} />
+          </label>
+          <div />
+          <label className={label}>
+            Check-in
+            <input type="date" value={checkIn} onChange={(e) => setCheckIn(e.target.value)} className={field} required />
+          </label>
+          <label className={label}>
+            Check-out
+            <input type="date" value={checkOut} onChange={(e) => setCheckOut(e.target.value)} className={field} required />
+          </label>
+
+          <div className="sm:col-span-2 flex items-center gap-4">
+            <button
+              type="submit"
+              disabled={mut.isPending}
+              className="bg-gold text-deep font-medium px-6 py-2 text-xs uppercase tracking-[0.2em] hover:bg-gold-light disabled:opacity-60"
+            >
+              {mut.isPending ? "Booking…" : "Confirm booking"}
+            </button>
+            <span className="text-[10px] text-zinc-500">No online payment is charged — payment is collected at the desk.</span>
+          </div>
+
+          {error && <p className="sm:col-span-2 text-xs text-red-400">{error}</p>}
+          {result && (
+            <p className="sm:col-span-2 text-xs text-gold-light">
+              Booked — Room {result.room_number}, confirmation code {result.confirmation_code}.
+            </p>
+          )}
+        </form>
+      )}
+    </section>
+  );
+}
