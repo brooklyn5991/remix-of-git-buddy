@@ -2,8 +2,9 @@ import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
-import { adminLogin, adminListReservedRooms } from "@/lib/hotel.functions";
+import { adminLogin, adminListReservedRooms, adminCreateManualBooking } from "@/lib/hotel.functions";
 import { supabase } from "@/integrations/supabase/client";
+
 
 
 const currency = (n: number) =>
@@ -172,7 +173,9 @@ function AdminDashboard({ creds, onSignOut }: { creds: Creds; onSignOut: () => v
         </div>
       </header>
 
-      <main className="max-w-7xl mx-auto px-6 py-10 space-y-6">
+      <main className="max-w-7xl mx-auto px-6 py-10 space-y-10">
+        <AdminManualBooking creds={creds} onBooked={() => q.refetch()} />
+
         <div className="flex items-baseline justify-between">
           <p className="text-[10px] uppercase tracking-[0.3em] text-gold">All Reserved Rooms</p>
           <p className="text-xs text-zinc-400">{rows.length} paid booking{rows.length === 1 ? "" : "s"}</p>
@@ -188,17 +191,19 @@ function AdminDashboard({ creds, onSignOut }: { creds: Creds; onSignOut: () => v
                 <th className="text-left p-3">WhatsApp</th>
                 <th className="text-left p-3">Category</th>
                 <th className="text-left p-3">Amount Paid</th>
+                <th className="text-left p-3">Payment Method</th>
                 <th className="text-left p-3">Dates</th>
                 <th className="text-left p-3">Booked At</th>
               </tr>
             </thead>
             <tbody>
               {q.isLoading && (
-                <tr><td colSpan={8} className="p-8 text-center text-zinc-400 text-sm">Loading…</td></tr>
+                <tr><td colSpan={9} className="p-8 text-center text-zinc-400 text-sm">Loading…</td></tr>
               )}
               {!q.isLoading && rows.length === 0 && (
-                <tr><td colSpan={8} className="p-8 text-center text-zinc-400 text-sm">No reserved rooms yet.</td></tr>
+                <tr><td colSpan={9} className="p-8 text-center text-zinc-400 text-sm">No reserved rooms yet.</td></tr>
               )}
+
               {rows.map((r) => {
                 const room = r.rooms as { room_number?: string; tier?: string; name?: string } | null;
                 return (
@@ -212,6 +217,12 @@ function AdminDashboard({ creds, onSignOut }: { creds: Creds; onSignOut: () => v
                     <td className="p-3 text-xs text-zinc-200">{r.guest_phone as string}</td>
                     <td className="p-3 text-xs">{room?.tier ?? "—"}</td>
                     <td className="p-3">{currency(r.total_ngn as number)}</td>
+                    <td className="p-3 text-xs">
+                      <span className="inline-block px-2 py-0.5 ring-1 ring-gold/30 uppercase tracking-[0.15em] text-[10px] text-gold-light">
+                        {methodLabel(r.payment_method as string | null)}
+                      </span>
+                    </td>
+
                     <td className="p-3 text-xs text-zinc-300">
                       {r.check_in as string} → {r.check_out as string}
                     </td>
@@ -230,5 +241,142 @@ function AdminDashboard({ creds, onSignOut }: { creds: Creds; onSignOut: () => v
         )}
       </main>
     </div>
+  );
+}
+
+function methodLabel(m: string | null) {
+  if (m === "cash") return "Cash";
+  if (m === "pos") return "POS";
+  return "Paystack";
+}
+
+const TIERS = ["Standard", "Deluxe", "Executive", "Suite"] as const;
+
+function AdminManualBooking({ creds, onBooked }: { creds: Creds; onBooked: () => void }) {
+  const book = useServerFn(adminCreateManualBooking);
+  const [open, setOpen] = useState(false);
+  const [tier, setTier] = useState<(typeof TIERS)[number]>("Standard");
+  const [guestName, setGuestName] = useState("");
+  const [guestEmail, setGuestEmail] = useState("");
+  const [guestPhone, setGuestPhone] = useState("");
+  const [checkIn, setCheckIn] = useState("");
+  const [checkOut, setCheckOut] = useState("");
+  const [method, setMethod] = useState<"cash" | "pos" | "">("");
+  const [error, setError] = useState<string | null>(null);
+  const [result, setResult] = useState<{ confirmation_code: string; room_number: string } | null>(null);
+
+  const mut = useMutation({
+    mutationFn: () =>
+      book({
+        data: {
+          ...creds,
+          tier,
+          guest_name: guestName.trim(),
+          guest_email: guestEmail.trim(),
+          guest_phone: guestPhone.trim(),
+          check_in: checkIn,
+          check_out: checkOut,
+          payment_method: method as "cash" | "pos",
+        },
+      }),
+    onSuccess: (r) => {
+      setResult({ confirmation_code: r.confirmation_code, room_number: r.room_number });
+      setGuestName(""); setGuestEmail(""); setGuestPhone(""); setCheckIn(""); setCheckOut(""); setMethod("");
+      onBooked();
+    },
+    onError: (e: Error) => setError(e.message),
+  });
+
+  const field = "mt-1 w-full bg-deep border border-gold/30 px-3 py-2 text-sm text-gold-light focus:outline-none focus:border-gold";
+  const label = "block text-[10px] uppercase tracking-[0.2em] text-gold/80";
+
+  return (
+    <section className="ring-1 ring-gold/20 bg-warm/5">
+      <button
+        type="button"
+        onClick={() => setOpen((v) => !v)}
+        className="w-full flex items-center justify-between px-6 py-4 text-left"
+      >
+        <span>
+          <span className="block text-[10px] uppercase tracking-[0.3em] text-gold">Manual Booking</span>
+          <span className="block font-serif text-lg text-gold-light">Walk-in / Offline (Cash or POS)</span>
+        </span>
+        <span className="text-gold text-sm">{open ? "Close" : "New booking"}</span>
+      </button>
+
+      {open && (
+        <form
+          onSubmit={(e) => {
+            e.preventDefault();
+            setError(null);
+            setResult(null);
+            if (!method) { setError("Select a payment method (Cash or POS)."); return; }
+            mut.mutate();
+          }}
+          className="px-6 pb-6 grid gap-4 sm:grid-cols-2"
+        >
+          <label className={label}>
+            Room category
+            <select value={tier} onChange={(e) => setTier(e.target.value as (typeof TIERS)[number])} className={field}>
+              {TIERS.map((t) => <option key={t} value={t}>{t}</option>)}
+            </select>
+          </label>
+
+          <label className={label}>
+            Payment method (required)
+            <select
+              value={method}
+              onChange={(e) => setMethod(e.target.value as "cash" | "pos" | "")}
+              className={field}
+              required
+            >
+              <option value="">Select…</option>
+              <option value="cash">Cash</option>
+              <option value="pos">POS</option>
+            </select>
+          </label>
+
+          <label className={label}>
+            Guest name
+            <input value={guestName} onChange={(e) => setGuestName(e.target.value)} className={field} required minLength={2} />
+          </label>
+          <label className={label}>
+            Guest email
+            <input type="email" value={guestEmail} onChange={(e) => setGuestEmail(e.target.value)} className={field} required />
+          </label>
+          <label className={label}>
+            WhatsApp number
+            <input value={guestPhone} onChange={(e) => setGuestPhone(e.target.value)} className={field} required minLength={6} />
+          </label>
+          <div />
+          <label className={label}>
+            Check-in
+            <input type="date" value={checkIn} onChange={(e) => setCheckIn(e.target.value)} className={field} required />
+          </label>
+          <label className={label}>
+            Check-out
+            <input type="date" value={checkOut} onChange={(e) => setCheckOut(e.target.value)} className={field} required />
+          </label>
+
+          <div className="sm:col-span-2 flex items-center gap-4">
+            <button
+              type="submit"
+              disabled={mut.isPending}
+              className="bg-gold text-deep font-medium px-6 py-2 text-xs uppercase tracking-[0.2em] hover:bg-gold-light disabled:opacity-60"
+            >
+              {mut.isPending ? "Booking…" : "Confirm booking"}
+            </button>
+            <span className="text-[10px] text-zinc-500">No online payment is charged — payment is collected at the desk.</span>
+          </div>
+
+          {error && <p className="sm:col-span-2 text-xs text-red-400">{error}</p>}
+          {result && (
+            <p className="sm:col-span-2 text-xs text-gold-light">
+              Booked — Room {result.room_number}, confirmation code {result.confirmation_code}.
+            </p>
+          )}
+        </form>
+      )}
+    </section>
   );
 }
