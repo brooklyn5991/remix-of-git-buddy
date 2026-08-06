@@ -173,7 +173,9 @@ function AdminDashboard({ creds, onSignOut }: { creds: Creds; onSignOut: () => v
         </div>
       </header>
 
-      <main className="max-w-7xl mx-auto px-6 py-10 space-y-6">
+      <main className="max-w-7xl mx-auto px-6 py-10 space-y-10">
+        <AdminManualBooking creds={creds} onBooked={() => q.refetch()} />
+
         <div className="flex items-baseline justify-between">
           <p className="text-[10px] uppercase tracking-[0.3em] text-gold">All Reserved Rooms</p>
           <p className="text-xs text-zinc-400">{rows.length} paid booking{rows.length === 1 ? "" : "s"}</p>
@@ -189,17 +191,19 @@ function AdminDashboard({ creds, onSignOut }: { creds: Creds; onSignOut: () => v
                 <th className="text-left p-3">WhatsApp</th>
                 <th className="text-left p-3">Category</th>
                 <th className="text-left p-3">Amount Paid</th>
+                <th className="text-left p-3">Payment Method</th>
                 <th className="text-left p-3">Dates</th>
                 <th className="text-left p-3">Booked At</th>
               </tr>
             </thead>
             <tbody>
               {q.isLoading && (
-                <tr><td colSpan={8} className="p-8 text-center text-zinc-400 text-sm">Loading…</td></tr>
+                <tr><td colSpan={9} className="p-8 text-center text-zinc-400 text-sm">Loading…</td></tr>
               )}
               {!q.isLoading && rows.length === 0 && (
-                <tr><td colSpan={8} className="p-8 text-center text-zinc-400 text-sm">No reserved rooms yet.</td></tr>
+                <tr><td colSpan={9} className="p-8 text-center text-zinc-400 text-sm">No reserved rooms yet.</td></tr>
               )}
+
               {rows.map((r) => {
                 const room = r.rooms as { room_number?: string; tier?: string; name?: string } | null;
                 return (
