@@ -377,31 +377,33 @@ function AdminManualBooking({ creds, onBooked }: { creds: Creds; onBooked: () =>
         </form>
       )}
 
-      {result && (
-        <div
-          className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 px-4"
-          role="alertdialog"
-          aria-modal="true"
-        >
-          <div className="w-full max-w-md bg-deep ring-2 ring-gold p-8 text-center space-y-4">
-            <p className="text-[10px] uppercase tracking-[0.4em] text-gold">Booking Confirmed Successfully!</p>
-            <h2 className="font-serif text-2xl font-bold text-gold-light leading-snug">
-              Success! Booking Confirmed for {result.guest_name} in Room {result.room_number}.
-            </h2>
-            <p className="text-sm text-zinc-300">
-              Confirmation code:{" "}
-              <span className="font-mono text-gold">{result.confirmation_code}</span>
-            </p>
-            <button
-              type="button"
-              onClick={() => setResult(null)}
-              className="w-full bg-gold text-deep font-medium py-2 text-xs uppercase tracking-[0.2em] hover:bg-gold-light"
-            >
-              Done
-            </button>
-          </div>
-        </div>
-      )}
+      {result && typeof document !== "undefined" &&
+        createPortal(
+          <div
+            className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/80 px-4"
+            role="alertdialog"
+            aria-modal="true"
+          >
+            <div className="w-full max-w-md bg-deep ring-2 ring-gold p-8 text-center space-y-4 shadow-2xl">
+              <p className="text-[10px] uppercase tracking-[0.4em] text-gold">Booking Confirmed Successfully!</p>
+              <h2 className="font-serif text-2xl font-bold text-gold-light leading-snug">
+                Success! Booking Confirmed for {result.guest_name} in Room {result.room_number}.
+              </h2>
+              <p className="text-sm text-zinc-300">
+                Confirmation code:{" "}
+                <span className="font-mono text-gold">{result.confirmation_code}</span>
+              </p>
+              <button
+                type="button"
+                onClick={() => setResult(null)}
+                className="w-full bg-gold text-deep font-medium py-2 text-xs uppercase tracking-[0.2em] hover:bg-gold-light"
+              >
+                Done
+              </button>
+            </div>
+          </div>,
+          document.body,
+        )}
     </section>
   );
 }
