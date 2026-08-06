@@ -476,7 +476,7 @@ export const adminListReservedRooms = createServerFn({ method: "POST" })
     try { await supabaseAdmin.rpc("auto_checkout_past_reservations"); } catch { /* ignore */ }
     const { data: rows, error } = await supabaseAdmin
       .from("reservations")
-      .select("id, guest_name, guest_email, guest_phone, check_in, check_out, total_ngn, status, payment_status, confirmation_code, created_at, rooms(room_number, tier, name)")
+      .select("id, guest_name, guest_email, guest_phone, check_in, check_out, total_ngn, status, payment_status, payment_method, source, confirmation_code, created_at, rooms(room_number, tier, name)")
       .eq("payment_status", "paid")
       .in("status", ["confirmed", "checked_in"])
       .order("created_at", { ascending: false })
@@ -484,6 +484,98 @@ export const adminListReservedRooms = createServerFn({ method: "POST" })
     if (error) throw new Error(error.message);
     return rows ?? [];
   });
+
+// ---------------- Admin: manual booking (cash / POS, no Paystack) ----------------
+const adminBookingSchema = adminCredsSchema.extend({
+  tier: z.enum(["Standard", "Deluxe", "Executive", "Suite"]),
+  guest_name: z.string().trim().min(2).max(120),
+  guest_email: z.string().trim().email(),
+  guest_phone: z.string().trim().min(6).max(30),
+  check_in: z.string(),
+  check_out: z.string(),
+  payment_method: z.enum(["cash", "pos"]),
+});
+
+export const adminCreateManualBooking = createServerFn({ method: "POST" })
+  .inputValidator((d: unknown) => adminBookingSchema.parse(d))
+  .handler(async ({ data }) => {
+    const { verifyAdminCreds } = await import("@/lib/admin-auth.server");
+    await verifyAdminCreds(data.username, data.password);
+    if (new Date(data.check_out) <= new Date(data.check_in)) {
+      throw new Error("Check-out must be after check-in");
+    }
+    const sb = await serverDb();
+    const { data: tierRooms, error: tErr } = await sb
+      .from("rooms")
+      .select("id, price_ngn, room_number, name")
+      .eq("tier", data.tier)
+      .eq("is_active", true)
+      .order("room_number", { ascending: true });
+    if (tErr) throw new Error(tErr.message);
+    if (!tierRooms || tierRooms.length === 0) throw new Error(`No ${data.tier} rooms configured.`);
+
+    const { data: overlaps, error: oErr } = await sb
+      .from("reservations")
+      .select("room_id, check_in, check_out")
+      .in("status", ["confirmed", "checked_in"])
+      .lt("check_in", data.check_out)
+      .gte("check_out", data.check_in);
+    if (oErr) throw new Error(oErr.message);
+    const bookedIds = new Set(
+      (overlaps ?? [])
+        .filter((r) =>
+          occupies(
+            { check_in: r.check_in as string, check_out: r.check_out as string },
+            { check_in: data.check_in, check_out: data.check_out },
+          ),
+        )
+        .map((r) => r.room_id as string),
+    );
+
+    const available = tierRooms.filter((r) => !bookedIds.has(r.id));
+    if (available.length === 0) throw new Error(`All ${data.tier} rooms are booked for those dates.`);
+
+    const nights = Math.ceil(
+      (new Date(data.check_out).getTime() - new Date(data.check_in).getTime()) / 86400000,
+    );
+
+    for (const room of available) {
+      const { data: created, error } = await sb
+        .from("reservations")
+        .insert({
+          room_id: room.id,
+          guest_name: data.guest_name,
+          guest_email: data.guest_email,
+          guest_phone: data.guest_phone,
+          check_in: data.check_in,
+          check_out: data.check_out,
+          total_ngn: nights * room.price_ngn,
+          source: "walk_in",
+          status: "confirmed",
+          payment_status: "paid",
+          payment_method: data.payment_method,
+          notes: `Manual admin booking — paid by ${data.payment_method.toUpperCase()}`,
+        })
+        .select("id, confirmation_code, total_ngn, check_in, check_out")
+        .single();
+      if (!error && created) {
+        return {
+          id: created.id as string,
+          confirmation_code: created.confirmation_code as string,
+          total_ngn: created.total_ngn as number,
+          room_number: room.room_number as string,
+          room_name: room.name as string,
+          payment_method: data.payment_method,
+          check_in: created.check_in as string,
+          check_out: created.check_out as string,
+        };
+      }
+      if (error && (error.code === "23P01" || error.message.toLowerCase().includes("exclude"))) continue;
+      if (error) throw new Error(error.message);
+    }
+    throw new Error(`All ${data.tier} rooms were just booked for those dates.`);
+  });
+
 
 
 // ---------------- Staff: walk-in reservation ----------------
