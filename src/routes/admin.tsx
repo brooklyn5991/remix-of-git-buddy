@@ -263,7 +263,7 @@ function AdminManualBooking({ creds, onBooked }: { creds: Creds; onBooked: () =>
   const [checkOut, setCheckOut] = useState("");
   const [method, setMethod] = useState<"cash" | "pos" | "">("");
   const [error, setError] = useState<string | null>(null);
-  const [result, setResult] = useState<{ confirmation_code: string; room_number: string } | null>(null);
+  const [result, setResult] = useState<{ confirmation_code: string; room_number: string; guest_name: string } | null>(null);
 
   const mut = useMutation({
     mutationFn: () =>
@@ -280,7 +280,7 @@ function AdminManualBooking({ creds, onBooked }: { creds: Creds; onBooked: () =>
         },
       }),
     onSuccess: (r) => {
-      setResult({ confirmation_code: r.confirmation_code, room_number: r.room_number });
+      setResult({ confirmation_code: r.confirmation_code, room_number: r.room_number, guest_name: guestName.trim() });
       setGuestName(""); setGuestEmail(""); setGuestPhone(""); setCheckIn(""); setCheckOut(""); setMethod("");
       onBooked();
     },
