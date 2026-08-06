@@ -75,6 +75,7 @@ export type Database = {
           id: string
           nights: number | null
           notes: string | null
+          payment_method: string
           payment_reference: string | null
           payment_status: string
           room_id: string
@@ -94,6 +95,7 @@ export type Database = {
           id?: string
           nights?: number | null
           notes?: string | null
+          payment_method?: string
           payment_reference?: string | null
           payment_status?: string
           room_id: string
@@ -113,6 +115,7 @@ export type Database = {
           id?: string
           nights?: number | null
           notes?: string | null
+          payment_method?: string
           payment_reference?: string | null
           payment_status?: string
           room_id?: string
