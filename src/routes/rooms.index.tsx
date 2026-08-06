@@ -74,7 +74,7 @@ function RoomsPage() {
         <section className="px-4 sm:px-6 py-12 md:py-16 max-w-7xl mx-auto animate-fade-in-up">
           <p className="text-[10px] uppercase tracking-[0.4em] text-gold mb-6">Rooms & Availability</p>
           <h1 className="font-serif text-4xl sm:text-5xl md:text-6xl text-gold-light leading-tight mb-6 max-w-3xl">
-            Three rooms. Pick your style.
+            Four rooms. Pick your style.
           </h1>
           <p className="text-zinc-300/85 max-w-2xl leading-relaxed">
             Choose your dates, pick a room category, and we&rsquo;ll assign the next available room
