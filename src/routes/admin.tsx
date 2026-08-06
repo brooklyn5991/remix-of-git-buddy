@@ -282,7 +282,9 @@ function AdminManualBooking({ creds, onBooked }: { creds: Creds; onBooked: () =>
         },
       }),
     onSuccess: (r) => {
-      setResult({ confirmation_code: r.confirmation_code, room_number: r.room_number, guest_name: guestName.trim() });
+      const name = guestName.trim();
+      setResult({ confirmation_code: r.confirmation_code, room_number: r.room_number, guest_name: name });
+      toast.success(`Booking Confirmed for ${name} in Room ${r.room_number}`);
       setGuestName(""); setGuestEmail(""); setGuestPhone(""); setCheckIn(""); setCheckOut(""); setMethod("");
       onBooked();
     },
