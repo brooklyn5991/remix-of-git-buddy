@@ -1,9 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { SiteNav } from "@/components/site-nav";
 import { SiteFooter } from "@/components/site-footer";
-import hero from "@/assets/hero-courtyard.jpg";
-import garden from "@/assets/garden.jpg";
-import exterior from "@/assets/exterior.jpg";
 import {
   roomExecutiveImg as roomExecutive,
   roomDeluxeImg as roomDeluxe,
@@ -13,6 +10,11 @@ import {
 
 const bathroom = "/bathroom.png";
 const showerGel = "/gel.png";
+const frontage = "/IMG-20260807-WA0010.jpg";
+const grounds = "/20260806_145825.jpg";
+const walkway = "/walkway.jpg";
+const outside = "/outside.png";
+
 
 export const Route = createFileRoute("/gallery")({
   head: () => ({
