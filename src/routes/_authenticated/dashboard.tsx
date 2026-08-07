@@ -74,20 +74,22 @@ function Dashboard() {
   const allRes = reservations.data ?? [];
   const totalRooms = rooms.data?.length ?? 0;
 
-  // A room is occupied today only if a confirmed/checked-in reservation spans today.
-  // check_out is exclusive (guest leaves that morning) so use strict >.
-  const todayStr = new Date().toISOString().slice(0, 10);
-  const occupiedToday = allRes.filter((r) =>
-    (r.status === "confirmed" || r.status === "checked_in") &&
-    r.check_in <= todayStr &&
-    r.check_out > todayStr
-  );
+  // Same logic as the public site: a room stays held until 2:00 PM (Africa/Lagos)
+  // on the check-out day. `occupies` encodes that turnover rule.
+  const { date: todayStr } = lagosNow();
+  const tomorrowStr = new Date(new Date(`${todayStr}T00:00:00Z`).getTime() + 86400000)
+    .toISOString()
+    .slice(0, 10);
+  const isLive = (r: { status: string }) => r.status === "confirmed" || r.status === "checked_in";
+  const holdsToday = (r: { check_in: string; check_out: string }) =>
+    occupies({ check_in: r.check_in, check_out: r.check_out }, { check_in: todayStr, check_out: tomorrowStr });
 
-  const active = allRes.filter((r) =>
-    (r.status === "confirmed" || r.status === "checked_in") &&
-    r.check_out > todayStr
-  );
-  const availableNow = Math.max(0, totalRooms - occupiedToday.length);
+  const occupiedToday = allRes.filter((r) => isLive(r) && holdsToday(r));
+
+  // Active = anything still held today plus future bookings not yet released.
+  const active = allRes.filter((r) => isLive(r) && (holdsToday(r) || r.check_in > todayStr));
+  const occupiedRoomIds = new Set(occupiedToday.map((r) => r.room_id));
+  const availableNow = Math.max(0, totalRooms - occupiedRoomIds.size);
 
 
 
