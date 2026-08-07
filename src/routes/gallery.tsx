@@ -33,16 +33,18 @@ export const Route = createFileRoute("/gallery")({
 });
 
 const items = [
-  { src: hero, alt: "Courtyard at sunset", caption: "The Courtyard" },
+  { src: frontage, alt: "Garen's Garden property frontage", caption: "The House" },
   { src: roomExecutive, alt: "Executive Suite", caption: "Executive Suite" },
-  { src: exterior, alt: "Exterior at dusk", caption: "Exterior · Dusk" },
+  { src: outside, alt: "Outside the property", caption: "Outside" },
   { src: roomSuite, alt: "The Suite", caption: "The Suite" },
-  { src: garden, alt: "Garden", caption: "Garden Path" },
+  { src: walkway, alt: "Walkway through the grounds", caption: "The Walkway" },
   { src: roomDeluxe, alt: "Deluxe Room", caption: "Deluxe Room" },
+  { src: grounds, alt: "Garen's Garden grounds", caption: "The Grounds" },
   { src: bathroom, alt: "Walk-in shower bath", caption: "The Bath" },
   { src: roomStandard, alt: "Standard Room", caption: "Standard Room" },
   { src: showerGel, alt: "In-room shower gel amenity", caption: "Shower Gel" },
 ];
+
 
 
 function GalleryPage() {
