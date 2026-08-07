@@ -1,9 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { SiteNav } from "@/components/site-nav";
 import { SiteFooter } from "@/components/site-footer";
-import hero from "@/assets/hero-courtyard.jpg";
-import garden from "@/assets/garden.jpg";
-import exterior from "@/assets/exterior.jpg";
 import {
   roomExecutiveImg as roomExecutive,
   roomDeluxeImg as roomDeluxe,
@@ -13,6 +10,11 @@ import {
 
 const bathroom = "/bathroom.png";
 const showerGel = "/gel.png";
+const frontage = "/IMG-20260807-WA0010.jpg";
+const grounds = "/20260806_145825.jpg";
+const walkway = "/walkway.jpg";
+const outside = "/outside.png";
+
 
 export const Route = createFileRoute("/gallery")({
   head: () => ({
@@ -31,16 +33,18 @@ export const Route = createFileRoute("/gallery")({
 });
 
 const items = [
-  { src: hero, alt: "Courtyard at sunset", caption: "The Courtyard" },
+  { src: frontage, alt: "Garen's Garden property frontage", caption: "The House" },
   { src: roomExecutive, alt: "Executive Suite", caption: "Executive Suite" },
-  { src: exterior, alt: "Exterior at dusk", caption: "Exterior · Dusk" },
+  { src: outside, alt: "Outside the property", caption: "Outside" },
   { src: roomSuite, alt: "The Suite", caption: "The Suite" },
-  { src: garden, alt: "Garden", caption: "Garden Path" },
+  { src: walkway, alt: "Walkway through the grounds", caption: "The Walkway" },
   { src: roomDeluxe, alt: "Deluxe Room", caption: "Deluxe Room" },
+  { src: grounds, alt: "Garen's Garden grounds", caption: "The Grounds" },
   { src: bathroom, alt: "Walk-in shower bath", caption: "The Bath" },
   { src: roomStandard, alt: "Standard Room", caption: "Standard Room" },
   { src: showerGel, alt: "In-room shower gel amenity", caption: "Shower Gel" },
 ];
+
 
 
 function GalleryPage() {
