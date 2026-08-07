@@ -305,7 +305,9 @@ function AdminManualBooking({ creds, onBooked }: { creds: Creds; onBooked: () =>
           <span className="block text-[10px] uppercase tracking-[0.3em] text-gold">Manual Booking</span>
           <span className="block font-serif text-lg text-gold-light">Walk-in / Offline (Cash or POS)</span>
         </span>
-        <span className="text-gold text-sm">{open ? "Close" : "New booking"}</span>
+        <span className="shrink-0 bg-gold text-deep hover:bg-gold-light transition-colors px-6 py-3 text-[11px] font-medium uppercase tracking-[0.3em]">
+          {open ? "Close" : "New booking"}
+        </span>
       </button>
 
       {open && (
