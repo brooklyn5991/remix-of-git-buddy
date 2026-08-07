@@ -10,6 +10,7 @@ import {
   cancelReservation,
   myRole,
 } from "@/lib/hotel.functions";
+import { occupies, lagosNow } from "@/lib/availability";
 
 
 const currency = (n: number) =>
