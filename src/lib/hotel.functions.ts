@@ -81,8 +81,9 @@ export const createOnlineReservation = createServerFn({ method: "POST" })
       .from("rooms")
       .select("id, price_ngn, room_number, name")
       .eq("id", data.room_id)
+      .eq("is_active", true)
       .maybeSingle();
-    if (rErr || !room) throw new Error("Room not found");
+    if (rErr || !room) throw new Error("Room is unavailable");
     const nights = Math.ceil(
       (new Date(data.check_out).getTime() - new Date(data.check_in).getTime()) / 86400000,
     );
