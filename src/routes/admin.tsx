@@ -358,16 +358,17 @@ function AdminManualBooking({ creds, onBooked }: { creds: Creds; onBooked: () =>
               value={roomId}
               onChange={(e) => setRoomId(e.target.value)}
               className={field}
-              disabled={!datesValid || roomsQ.isLoading}
             >
               <option value="">
                 {!datesValid
                   ? "Select check-in / check-out first…"
-                  : roomsQ.isLoading
+                  : roomsLoading
                     ? "Loading available rooms…"
-                    : availableRooms.length === 0
-                      ? `No ${tier} rooms free for those dates`
-                      : "Auto-assign next available"}
+                    : roomsError
+                      ? "Couldn't load rooms — auto-assign"
+                      : availableRooms.length === 0
+                        ? `No available rooms for selected dates`
+                        : "Auto-assign next available"}
               </option>
               {availableRooms.map((r) => (
                 <option key={r.id} value={r.id}>
@@ -376,8 +377,15 @@ function AdminManualBooking({ creds, onBooked }: { creds: Creds; onBooked: () =>
               ))}
             </select>
             <span className="mt-1 block text-[10px] normal-case tracking-normal text-zinc-500">
-              {datesValid ? `${availableRooms.length} room${availableRooms.length === 1 ? "" : "s"} free` : "Admin only — guests still book by category."}
+              {!datesValid
+                ? "Admin only — guests still book by category."
+                : roomsLoading
+                  ? "Checking availability…"
+                  : roomsError
+                    ? roomsError.message
+                    : `${availableRooms.length} room${availableRooms.length === 1 ? "" : "s"} free`}
             </span>
+
           </label>
 
 
