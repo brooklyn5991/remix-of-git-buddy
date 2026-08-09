@@ -26,7 +26,7 @@ function loadCreds(): Creds | null {
   }
 }
 
-export const Route = createFileRoute("/admin")({
+export const Route = createFileRoute("/born")({
   ssr: false,
   head: () => ({ meta: [{ title: "Admin — Garen's Garden" }] }),
   component: AdminPage,
@@ -148,7 +148,7 @@ function AdminDashboard({ creds, onSignOut }: { creds: Creds; onSignOut: () => v
       const msg = (q.error as Error).message || "";
       if (msg.toLowerCase().includes("invalid")) {
         sessionStorage.removeItem(CREDS_KEY);
-        navigate({ to: "/admin", replace: true });
+        navigate({ to: "/born", replace: true });
       }
     }
   }, [q.error, navigate]);
