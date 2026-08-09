@@ -585,8 +585,13 @@ export const adminCreateManualBooking = createServerFn({ method: "POST" })
         .map((r) => r.room_id as string),
     );
 
-    const available = tierRooms.filter((r) => !bookedIds.has(r.id));
+    let available = tierRooms.filter((r) => !bookedIds.has(r.id));
+    if (data.room_id) {
+      available = available.filter((r) => r.id === data.room_id);
+      if (available.length === 0) throw new Error("That room is not available for those dates.");
+    }
     if (available.length === 0) throw new Error(`All ${data.tier} rooms are booked for those dates.`);
+
 
     const nights = Math.ceil(
       (new Date(data.check_out).getTime() - new Date(data.check_in).getTime()) / 86400000,
