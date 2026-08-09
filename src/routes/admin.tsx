@@ -256,8 +256,10 @@ const TIERS = ["Standard", "Deluxe", "Executive", "Suite"] as const;
 
 function AdminManualBooking({ creds, onBooked }: { creds: Creds; onBooked: () => void }) {
   const book = useServerFn(adminCreateManualBooking);
+  const listRooms = useServerFn(adminListAvailableRooms);
   const [open, setOpen] = useState(false);
   const [tier, setTier] = useState<(typeof TIERS)[number]>("Standard");
+  const [roomId, setRoomId] = useState("");
   const [guestName, setGuestName] = useState("");
   const [guestEmail, setGuestEmail] = useState("");
   const [guestPhone, setGuestPhone] = useState("");
@@ -267,12 +269,26 @@ function AdminManualBooking({ creds, onBooked }: { creds: Creds; onBooked: () =>
   const [error, setError] = useState<string | null>(null);
   const [result, setResult] = useState<{ confirmation_code: string; room_number: string; guest_name: string } | null>(null);
 
+  const datesValid = Boolean(checkIn && checkOut && new Date(checkOut) > new Date(checkIn));
+  const roomsQ = useQuery({
+    queryKey: ["admin-available-rooms", tier, checkIn, checkOut],
+    queryFn: () => listRooms({ data: { ...creds, tier, check_in: checkIn, check_out: checkOut } }),
+    enabled: open && datesValid,
+  });
+  const availableRooms = roomsQ.data ?? [];
+
+  // Clear the chosen room whenever the option set changes.
+  useEffect(() => {
+    if (roomId && !availableRooms.some((r) => r.id === roomId)) setRoomId("");
+  }, [availableRooms, roomId]);
+
   const mut = useMutation({
     mutationFn: () =>
       book({
         data: {
           ...creds,
           tier,
+          ...(roomId ? { room_id: roomId } : {}),
           guest_name: guestName.trim(),
           guest_email: guestEmail.trim(),
           guest_phone: guestPhone.trim(),
@@ -285,14 +301,16 @@ function AdminManualBooking({ creds, onBooked }: { creds: Creds; onBooked: () =>
       const name = guestName.trim();
       setResult({ confirmation_code: r.confirmation_code, room_number: r.room_number, guest_name: name });
       toast.success(`Booking Confirmed for ${name} in Room ${r.room_number}`);
-      setGuestName(""); setGuestEmail(""); setGuestPhone(""); setCheckIn(""); setCheckOut(""); setMethod("");
+      setGuestName(""); setGuestEmail(""); setGuestPhone(""); setCheckIn(""); setCheckOut(""); setMethod(""); setRoomId("");
       onBooked();
+      roomsQ.refetch();
     },
     onError: (e: Error) => setError(e.message),
   });
 
   const field = "mt-1 w-full bg-deep border border-gold/30 px-3 py-2 text-sm text-gold-light focus:outline-none focus:border-gold";
   const label = "block text-[10px] uppercase tracking-[0.2em] text-gold/80";
+
 
   return (
     <section className="ring-1 ring-gold/20 bg-warm/5">
