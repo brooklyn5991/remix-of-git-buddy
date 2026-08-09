@@ -486,9 +486,60 @@ export const adminListReservedRooms = createServerFn({ method: "POST" })
     return rows ?? [];
   });
 
+// ---------------- Admin: available physical rooms for a tier + date range ----------------
+const adminAvailabilitySchema = adminCredsSchema.extend({
+  tier: z.enum(["Standard", "Deluxe", "Executive", "Suite"]),
+  check_in: z.string(),
+  check_out: z.string(),
+});
+
+export const adminListAvailableRooms = createServerFn({ method: "POST" })
+  .inputValidator((d: unknown) => adminAvailabilitySchema.parse(d))
+  .handler(async ({ data }) => {
+    const { verifyAdminCreds } = await import("@/lib/admin-auth.server");
+    await verifyAdminCreds(data.username, data.password);
+    if (!data.check_in || !data.check_out) return [];
+    if (new Date(data.check_out) <= new Date(data.check_in)) return [];
+    const sb = await serverDb();
+    const { data: tierRooms, error: tErr } = await sb
+      .from("rooms")
+      .select("id, room_number, name, price_ngn")
+      .eq("tier", data.tier)
+      .eq("is_active", true)
+      .order("room_number", { ascending: true });
+    if (tErr) throw new Error(tErr.message);
+
+    const { data: overlaps, error: oErr } = await sb
+      .from("reservations")
+      .select("room_id, check_in, check_out")
+      .in("status", ["confirmed", "checked_in"])
+      .lt("check_in", data.check_out)
+      .gte("check_out", data.check_in);
+    if (oErr) throw new Error(oErr.message);
+    const bookedIds = new Set(
+      (overlaps ?? [])
+        .filter((r) =>
+          occupies(
+            { check_in: r.check_in as string, check_out: r.check_out as string },
+            { check_in: data.check_in, check_out: data.check_out },
+          ),
+        )
+        .map((r) => r.room_id as string),
+    );
+    return (tierRooms ?? [])
+      .filter((r) => !bookedIds.has(r.id as string))
+      .map((r) => ({
+        id: r.id as string,
+        room_number: r.room_number as string,
+        name: r.name as string,
+        price_ngn: r.price_ngn as number,
+      }));
+  });
+
 // ---------------- Admin: manual booking (cash / POS, no Paystack) ----------------
 const adminBookingSchema = adminCredsSchema.extend({
   tier: z.enum(["Standard", "Deluxe", "Executive", "Suite"]),
+  room_id: z.string().uuid().optional(),
   guest_name: z.string().trim().min(2).max(120),
   guest_email: z.string().trim().email(),
   guest_phone: z.string().trim().min(6).max(30),
@@ -496,6 +547,7 @@ const adminBookingSchema = adminCredsSchema.extend({
   check_out: z.string(),
   payment_method: z.enum(["cash", "pos"]),
 });
+
 
 export const adminCreateManualBooking = createServerFn({ method: "POST" })
   .inputValidator((d: unknown) => adminBookingSchema.parse(d))
