@@ -274,8 +274,14 @@ function AdminManualBooking({ creds, onBooked }: { creds: Creds; onBooked: () =>
     queryKey: ["admin-available-rooms", tier, checkIn, checkOut],
     queryFn: () => listRooms({ data: { ...creds, tier, check_in: checkIn, check_out: checkOut } }),
     enabled: open && datesValid,
+    retry: false,
+    staleTime: 0,
+    refetchOnWindowFocus: false,
   });
+  const roomsLoading = roomsQ.isFetching;
+  const roomsError = roomsQ.error as Error | null;
   const availableRooms = roomsQ.data ?? [];
+
 
   // Clear the chosen room whenever the option set changes.
   useEffect(() => {
