@@ -28,7 +28,7 @@ export const rooms: Room[] = [
     name: "The Standard Room",
     tagline: "Warm, quiet, and considered.",
     tier: "Standard",
-    price: 20000,
+    price: 23000,
     bed: "Queen orthopedic",
     size: "22 m²",
     sleeps: 2,
