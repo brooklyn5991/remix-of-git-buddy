@@ -1,6 +1,8 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { SiteNav } from "@/components/site-nav";
 import { SiteFooter } from "@/components/site-footer";
+import { InquiryForm } from "@/components/inquiry-form";
+
 import { roomExecutiveImg as roomExecutive, roomDeluxeImg as roomDeluxe } from "@/lib/room-images";
 
 const heroCourtyard = "/IMG-20260807-WA0010.jpg";
@@ -9,8 +11,26 @@ const gardenImg = "/walkway.jpg";
 
 
 export const Route = createFileRoute("/")({
+  head: () => ({
+    meta: [
+      { title: "Garen's Garden Hotel & Suite — Obiaruku, Delta State" },
+      {
+        name: "description",
+        content:
+          "Obiaruku's finest bed & breakfast. Standard, Deluxe, Executive and Suite rooms with 24/7 power, fibre Wi-Fi and secure parking.",
+      },
+      { property: "og:title", content: "Garen's Garden Hotel & Suite" },
+      {
+        property: "og:description",
+        content: "Obiaruku's finest bed & breakfast. Reborn 2026.",
+      },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
+    ],
+  }),
   component: Index,
 });
+
 
 function Index() {
   return (
@@ -296,7 +316,27 @@ function Index() {
             </div>
           </div>
         </section>
+
+        {/* Inquiry form */}
+        <section id="inquiry" className="px-4 sm:px-6 py-20 md:py-28 border-t border-gold/10">
+          <div className="max-w-3xl mx-auto">
+            <div className="text-center mb-10 md:mb-12">
+              <p className="text-[10px] uppercase tracking-[0.4em] text-gold mb-4">Get in Touch</p>
+              <h2 className="font-serif text-3xl md:text-5xl text-gold-light leading-tight mb-4 text-balance">
+                Send us a message.
+              </h2>
+              <p className="text-zinc-300/85 max-w-xl mx-auto leading-relaxed">
+                Questions, special requests, or feedback — it goes straight to the owner, and you&rsquo;ll
+                hear back personally.
+              </p>
+            </div>
+            <div className="bg-warm/5 ring-1 ring-gold/10 p-4 sm:p-8 md:p-10 hover-glow">
+              <InquiryForm />
+            </div>
+          </div>
+        </section>
       </main>
+
 
       <SiteFooter />
 
