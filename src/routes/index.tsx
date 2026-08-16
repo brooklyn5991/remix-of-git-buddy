@@ -1,6 +1,8 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { SiteNav } from "@/components/site-nav";
 import { SiteFooter } from "@/components/site-footer";
+import { InquiryForm } from "@/components/inquiry-form";
+
 import { roomExecutiveImg as roomExecutive, roomDeluxeImg as roomDeluxe } from "@/lib/room-images";
 
 const heroCourtyard = "/IMG-20260807-WA0010.jpg";
