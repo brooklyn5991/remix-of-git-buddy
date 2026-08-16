@@ -153,19 +153,7 @@ function Index() {
 
               {/* Gallery Preview: Dining — hidden for now */}
 
-
-              {/* Owner Hotline */}
-              <div className="md:col-span-1 bg-gold text-deep p-5 sm:p-8 flex flex-col justify-between animate-fade-in-up delay-400 hover-lift">
-                <p className="font-serif text-lg italic leading-relaxed text-pretty">
-                  &ldquo;Every stay is more than a visit — it&rsquo;s part of our story.&rdquo;
-                </p>
-                <div className="mt-8">
-                  <p className="text-[10px] uppercase tracking-[0.25em] mb-1 opacity-70 font-medium">
-                    Direct to Owner
-                  </p>
-                  <p className="text-sm font-medium">Complaint Hotline via web →</p>
-                </div>
-              </div>
+              {/* Owner Hotline — removed */}
             </div>
           </div>
         </section>
