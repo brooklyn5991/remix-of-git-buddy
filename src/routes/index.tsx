@@ -296,7 +296,27 @@ function Index() {
             </div>
           </div>
         </section>
+
+        {/* Inquiry form */}
+        <section id="inquiry" className="px-4 sm:px-6 py-20 md:py-28 border-t border-gold/10">
+          <div className="max-w-3xl mx-auto">
+            <div className="text-center mb-10 md:mb-12">
+              <p className="text-[10px] uppercase tracking-[0.4em] text-gold mb-4">Get in Touch</p>
+              <h2 className="font-serif text-3xl md:text-5xl text-gold-light leading-tight mb-4 text-balance">
+                Send us a message.
+              </h2>
+              <p className="text-zinc-300/85 max-w-xl mx-auto leading-relaxed">
+                Questions, special requests, or feedback — it goes straight to the owner, and you&rsquo;ll
+                hear back personally.
+              </p>
+            </div>
+            <div className="bg-warm/5 ring-1 ring-gold/10 p-4 sm:p-8 md:p-10 hover-glow">
+              <InquiryForm />
+            </div>
+          </div>
+        </section>
       </main>
+
 
       <SiteFooter />
 
