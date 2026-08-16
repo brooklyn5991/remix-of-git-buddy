@@ -1,10 +1,8 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useState } from "react";
-import { useServerFn } from "@tanstack/react-start";
-import { useMutation } from "@tanstack/react-query";
 import { SiteNav } from "@/components/site-nav";
 import { SiteFooter } from "@/components/site-footer";
-import { submitComplaint } from "@/lib/hotel.functions";
+import { InquiryForm } from "@/components/inquiry-form";
+
 
 export const Route = createFileRoute("/contact")({
   head: () => ({
