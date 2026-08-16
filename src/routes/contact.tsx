@@ -87,30 +87,8 @@ function ContactPage() {
   );
 }
 
-function Field({
-  label,
-  value,
-  onChange,
-  required,
-}: {
-  label: string;
-  value: string;
-  onChange: (v: string) => void;
-  required?: boolean;
-}) {
-  return (
-    <div>
-      <label className="text-[10px] uppercase tracking-[0.25em] text-gold/70 mb-2 block">{label}</label>
-      <input
-        type="text"
-        value={value}
-        onChange={(e) => onChange(e.target.value)}
-        required={required}
-        className="w-full bg-transparent border border-gold/20 focus:border-gold/60 outline-none px-4 py-3 text-sm text-gold-light placeholder:text-zinc-500 transition-colors"
-      />
-    </div>
-  );
-}
+
+
 
 function Info({ label, value }: { label: string; value: string }) {
   return (
