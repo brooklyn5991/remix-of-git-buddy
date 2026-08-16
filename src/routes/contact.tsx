@@ -21,16 +21,8 @@ export const Route = createFileRoute("/contact")({
 });
 
 function ContactPage() {
-  const send = useServerFn(submitComplaint);
-  const [form, setForm] = useState({ guest_name: "", guest_contact: "", subject: "", message: "" });
-  const [submitted, setSubmitted] = useState(false);
-
-  const mut = useMutation({
-    mutationFn: (data: typeof form) => send({ data }),
-    onSuccess: () => setSubmitted(true),
-  });
-
   return (
+
     <div className="bg-deep font-sans text-gold-light min-h-screen antialiased">
       <SiteNav />
       <main className="pt-24 pb-24 md:pb-32 overflow-x-hidden">
