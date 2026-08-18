@@ -266,7 +266,7 @@ function AdminManualBooking({ creds, onBooked }: { creds: Creds; onBooked: () =>
   const [guestPhone, setGuestPhone] = useState("");
   const [checkIn, setCheckIn] = useState("");
   const [checkOut, setCheckOut] = useState("");
-  const [method, setMethod] = useState<"cash" | "pos" | "">("");
+  const [method, setMethod] = useState<"cash" | "pos" | "transfer" | "">("");
   const [error, setError] = useState<string | null>(null);
   const [result, setResult] = useState<{ confirmation_code: string; room_number: string; guest_name: string } | null>(null);
 
@@ -301,7 +301,7 @@ function AdminManualBooking({ creds, onBooked }: { creds: Creds; onBooked: () =>
           guest_phone: guestPhone.trim(),
           check_in: checkIn,
           check_out: checkOut,
-          payment_method: method as "cash" | "pos",
+          payment_method: method as "cash" | "pos" | "transfer",
         },
       }),
     onSuccess: (r) => {
@@ -328,7 +328,7 @@ function AdminManualBooking({ creds, onBooked }: { creds: Creds; onBooked: () =>
       >
         <span>
           <span className="block text-[10px] uppercase tracking-[0.3em] text-gold">Manual Booking</span>
-          <span className="block font-serif text-lg text-gold-light">Walk-in / Offline (Cash or POS)</span>
+          <span className="block font-serif text-lg text-gold-light">Walk-in / Offline (Cash, POS or Transfer)</span>
         </span>
         <span className="shrink-0 bg-gold text-deep hover:bg-gold-light transition-colors px-6 py-3 text-[11px] font-medium uppercase tracking-[0.3em]">
           {open ? "Close" : "New booking"}
@@ -341,7 +341,7 @@ function AdminManualBooking({ creds, onBooked }: { creds: Creds; onBooked: () =>
             e.preventDefault();
             setError(null);
             setResult(null);
-            if (!method) { setError("Select a payment method (Cash or POS)."); return; }
+            if (!method) { setError("Select a payment method (Cash, POS or Transfer)."); return; }
             mut.mutate();
           }}
           className="px-6 pb-6 grid gap-4 sm:grid-cols-2"
@@ -395,13 +395,14 @@ function AdminManualBooking({ creds, onBooked }: { creds: Creds; onBooked: () =>
             Payment method (required)
             <select
               value={method}
-              onChange={(e) => setMethod(e.target.value as "cash" | "pos" | "")}
+              onChange={(e) => setMethod(e.target.value as "cash" | "pos" | "transfer" | "")}
               className={field}
               required
             >
               <option value="">Select…</option>
               <option value="cash">Cash</option>
               <option value="pos">POS</option>
+              <option value="transfer">Transfer</option>
             </select>
           </label>
 
