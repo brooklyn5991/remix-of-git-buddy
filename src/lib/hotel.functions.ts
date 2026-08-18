@@ -545,7 +545,7 @@ const adminBookingSchema = adminCredsSchema.extend({
   guest_phone: z.string().trim().min(6).max(30),
   check_in: z.string(),
   check_out: z.string(),
-  payment_method: z.enum(["cash", "pos"]),
+  payment_method: z.enum(["cash", "pos", "transfer"]),
 });
 
 

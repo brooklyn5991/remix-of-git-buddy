@@ -249,6 +249,7 @@ function AdminDashboard({ creds, onSignOut }: { creds: Creds; onSignOut: () => v
 function methodLabel(m: string | null) {
   if (m === "cash") return "Cash";
   if (m === "pos") return "POS";
+  if (m === "transfer") return "Transfer";
   return "Paystack";
 }
 
