@@ -82,30 +82,6 @@ function RoomsPage() {
           </p>
         </section>
 
-        <section className="px-4 sm:px-6 max-w-7xl mx-auto mb-10 animate-fade-in-up delay-100 hover-glow">
-          <div className="bg-warm/10 ring-1 ring-gold/20 p-6 grid md:grid-cols-2 gap-4 items-end">
-            <div>
-              <label className="block text-[10px] uppercase tracking-[0.3em] text-gold/70 mb-2">Check-in</label>
-              <input
-                type="date"
-                value={checkIn}
-                min={today()}
-                onChange={(e) => setCheckIn(e.target.value)}
-                className="w-full bg-deep border border-gold/30 text-gold-light px-3 py-2 focus:border-gold outline-none transition-colors"
-              />
-            </div>
-            <div>
-              <label className="block text-[10px] uppercase tracking-[0.3em] text-gold/70 mb-2">Check-out</label>
-              <input
-                type="date"
-                value={checkOut}
-                min={checkIn}
-                onChange={(e) => setCheckOut(e.target.value)}
-                className="w-full bg-deep border border-gold/30 text-gold-light px-3 py-2 focus:border-gold outline-none transition-colors"
-              />
-            </div>
-          </div>
-        </section>
 
         <section className="px-4 sm:px-6 max-w-7xl mx-auto">
           {roomsQuery.isLoading ? (
