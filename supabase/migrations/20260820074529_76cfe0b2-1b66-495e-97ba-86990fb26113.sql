@@ -1,0 +1,1 @@
+UPDATE public.rooms SET is_active = (room_number NOT IN ('1001','1004','1006','2001','2011','2012'));
