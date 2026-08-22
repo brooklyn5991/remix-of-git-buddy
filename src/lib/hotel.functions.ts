@@ -739,7 +739,14 @@ export const ownerStats = createServerFn({ method: "GET" })
       .select("total_ngn, status, source, check_in, created_at, payment_status");
     if (error) throw new Error(error.message);
     const rows = data ?? [];
-    const paid = rows.filter((r) => r.payment_status === "paid" || r.source === "walk_in");
+    // Revenue never counts cancelled or refunded bookings.
+    const VOID_STATUSES = ["cancelled", "refunded"];
+    const paid = rows.filter(
+      (r) =>
+        !VOID_STATUSES.includes(r.status as string) &&
+        r.payment_status !== "refunded" &&
+        (r.payment_status === "paid" || r.source === "walk_in"),
+    );
     const today = new Date().toISOString().slice(0, 10);
     const thisMonth = today.slice(0, 7);
     const active = rows.filter((r) => r.status === "confirmed" || r.status === "checked_in");
