@@ -1,0 +1,1 @@
+UPDATE public.rooms SET is_active = true WHERE room_number IN ('1001','1004','1006');
