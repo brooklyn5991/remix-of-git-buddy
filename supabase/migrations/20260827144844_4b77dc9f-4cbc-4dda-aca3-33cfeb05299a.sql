@@ -1,0 +1,1 @@
+UPDATE public.rooms SET is_active = true WHERE room_number = '2012';
