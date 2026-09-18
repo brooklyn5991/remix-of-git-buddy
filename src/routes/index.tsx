@@ -13,16 +13,16 @@ const gardenImg = "/walkway.jpg";
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "Garen's Garden Hotel & Suite — Obiaruku, Delta State" },
+      { title: "Garen's Garden Hotel & Suite — Obiaruku, near Abraka, Delta State" },
       {
         name: "description",
         content:
-          "Obiaruku's finest bed & breakfast. Standard, Deluxe, Executive and Suite rooms with 24/7 power, fibre Wi-Fi and secure parking.",
+          "Obiaruku's finest bed & breakfast, minutes from Abraka. Standard, Deluxe, Executive and Suite rooms with 24/7 power, fibre Wi-Fi and secure parking.",
       },
       { property: "og:title", content: "Garen's Garden Hotel & Suite" },
       {
         property: "og:description",
-        content: "Obiaruku's finest bed & breakfast. Reborn 2026.",
+        content: "Obiaruku's finest bed & breakfast, minutes from Abraka. Reborn 2026.",
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
