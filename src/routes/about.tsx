@@ -33,8 +33,8 @@ function AboutPage() {
             </h1>
             <div className="space-y-6 text-zinc-300/90 leading-relaxed">
               <p>
-                Garen&rsquo;s Garden is Obiaruku&rsquo;s finest bed &amp; breakfast reborn in 2026 with a
-                fresh vision of hospitality. Our mission is simple yet profound: to create a haven
+                Garen&rsquo;s Garden is Obiaruku&rsquo;s finest bed &amp; breakfast, just minutes from
+                Abraka, reborn in 2026 with a fresh vision of hospitality. Our mission is simple yet profound: to create a haven
                 where comfort, warmth, and personalized service make every guest feel at home.
               </p>
               <p>
