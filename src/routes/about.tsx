@@ -11,10 +11,10 @@ export const Route = createFileRoute("/about")({
       {
         name: "description",
         content:
-          "Garen's Garden is Obiaruku's finest boutique bed & breakfast reborn in 2026. Our mission: to make every guest feel at home through warmth, care, and personalized service.",
+          "Garen's Garden is Obiaruku's finest boutique bed & breakfast, minutes from Abraka, reborn in 2026. Our mission: to make every guest feel at home through warmth, care, and personalized service.",
       },
       { property: "og:title", content: "Our Story — Garen's Garden" },
-      { property: "og:description", content: "Reborn 2026. A house well-kept." },
+      { property: "og:description", content: "Obiaruku's finest bed & breakfast, minutes from Abraka. Reborn 2026." },
     ],
   }),
   component: AboutPage,
@@ -33,8 +33,8 @@ function AboutPage() {
             </h1>
             <div className="space-y-6 text-zinc-300/90 leading-relaxed">
               <p>
-                Garen&rsquo;s Garden is Obiaruku&rsquo;s finest bed &amp; breakfast reborn in 2026 with a
-                fresh vision of hospitality. Our mission is simple yet profound: to create a haven
+                Garen&rsquo;s Garden is Obiaruku&rsquo;s finest bed &amp; breakfast, just minutes from
+                Abraka, reborn in 2026 with a fresh vision of hospitality. Our mission is simple yet profound: to create a haven
                 where comfort, warmth, and personalized service make every guest feel at home.
               </p>
               <p>

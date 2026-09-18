@@ -13,16 +13,16 @@ const gardenImg = "/walkway.jpg";
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "Garen's Garden Hotel & Suite — Obiaruku, Delta State" },
+      { title: "Garen's Garden Hotel & Suite — Obiaruku, near Abraka, Delta State" },
       {
         name: "description",
         content:
-          "Obiaruku's finest bed & breakfast. Standard, Deluxe, Executive and Suite rooms with 24/7 power, fibre Wi-Fi and secure parking.",
+          "Obiaruku's finest bed & breakfast, minutes from Abraka. Standard, Deluxe, Executive and Suite rooms with 24/7 power, fibre Wi-Fi and secure parking.",
       },
       { property: "og:title", content: "Garen's Garden Hotel & Suite" },
       {
         property: "og:description",
-        content: "Obiaruku's finest bed & breakfast. Reborn 2026.",
+        content: "Obiaruku's finest bed & breakfast, minutes from Abraka. Reborn 2026.",
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
@@ -57,8 +57,9 @@ function Index() {
               A sanctuary of stone,<br className="hidden md:block" /> light, and quiet earth.
             </h1>
             <p className="font-sans text-zinc-300/90 text-base md:text-lg max-w-[56ch] mx-auto text-pretty mb-14 leading-relaxed animate-fade-in-up delay-300">
-              Welcome to Garen&rsquo;s Garden — Obiaruku&rsquo;s finest room bed &amp; breakfast where
-              comfort, warmth, and personalized service come together to make every guest feel at home.
+              Welcome to Garen&rsquo;s Garden — Obiaruku&rsquo;s finest room bed &amp; breakfast, just
+              minutes from Abraka, where comfort, warmth, and personalized service come together to make
+              every guest feel at home.
             </p>
             <div className="w-full aspect-[4/3] sm:aspect-[16/9] lg:aspect-[21/9] overflow-hidden ring-1 ring-gold/10 rounded-[min(1vw,12px)] max-h-[520px] animate-scale-in delay-400">
               <img
