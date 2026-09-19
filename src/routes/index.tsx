@@ -92,9 +92,9 @@ function Index() {
               A sanctuary of stone,<br className="hidden md:block" /> light, and quiet earth.
             </h1>
             <p className="font-sans text-zinc-300/90 text-base md:text-lg max-w-[56ch] mx-auto text-pretty mb-14 leading-relaxed animate-fade-in-up delay-300">
-              Welcome to Garen&rsquo;s Garden — Obiaruku&rsquo;s finest room bed &amp; breakfast, just
-              minutes from Abraka, where comfort, warmth, and personalized service come together to make
-              every guest feel at home.
+              Welcome to Garen&rsquo;s Garden — a luxury hotel in Obiaruku, just minutes from Abraka
+              and Delta State University (DELSU), where comfort, warmth, and personalized service come
+              together to make every guest feel at home.
             </p>
             <div className="w-full aspect-[4/3] sm:aspect-[16/9] lg:aspect-[21/9] overflow-hidden ring-1 ring-gold/10 rounded-[min(1vw,12px)] max-h-[520px] animate-scale-in delay-400">
               <img
@@ -215,7 +215,8 @@ function Index() {
               <div className="space-y-6 text-zinc-300/90 leading-relaxed">
                 <p>
                   Garen&rsquo;s Garden is Obiaruku&rsquo;s finest bed &amp; breakfast reborn in 2026 with a
-                  fresh vision of hospitality. Our mission is simple yet profound: to create a haven
+                  fresh vision of hospitality — located in Obiaruku, just minutes away from Abraka and
+                  Delta State University (DELSU). Our mission is simple yet profound: to create a haven
                   where comfort, warmth, and personalized service make every guest feel at home.
                 </p>
                 <p>
