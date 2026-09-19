@@ -10,23 +10,58 @@ const gardenImg = "/walkway.jpg";
 
 
 
+const hotelJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "Hotel",
+  name: "Garen's Garden Hotel & Suite",
+  description:
+    "Obiaruku's finest boutique bed & breakfast, just minutes from Abraka and Delta State University (DELSU). Standard, Deluxe, Executive and Suite rooms with 24/7 solar power, fibre Wi-Fi, complimentary breakfast and secure in-compound parking.",
+  url: "https://garensgarden.lovable.app/",
+  image: "https://garensgarden.lovable.app/og-image.jpg",
+  telephone: "+2349064050424",
+  email: "brooklynoke1@gmail.com",
+  priceRange: "₦20,000 - ₦40,000",
+  address: {
+    "@type": "PostalAddress",
+    streetAddress: "52 New Sapele/Agbor Road",
+    addressLocality: "Obiaruku",
+    addressRegion: "Delta State",
+    addressCountry: "NG",
+  },
+  areaServed: [
+    { "@type": "City", name: "Obiaruku" },
+    { "@type": "City", name: "Abraka" },
+    { "@type": "AdministrativeArea", name: "Delta State" },
+  ],
+  amenityFeature: [
+    { "@type": "LocationFeatureSpecification", name: "24/7 Solar Power", value: true },
+    { "@type": "LocationFeatureSpecification", name: "High-Speed Fiber Wi-Fi", value: true },
+    { "@type": "LocationFeatureSpecification", name: "Complimentary Breakfast", value: true },
+    { "@type": "LocationFeatureSpecification", name: "Secure Parking", value: true },
+  ],
+  checkinTime: "15:00",
+  checkoutTime: "11:00",
+};
+
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "Garen's Garden Hotel & Suite — Obiaruku, near Abraka, Delta State" },
+      { title: "Garen's Garden Hotel & Suite | Luxury Hotel in Obiaruku & Abraka" },
       {
         name: "description",
         content:
-          "Obiaruku's finest bed & breakfast, minutes from Abraka. Standard, Deluxe, Executive and Suite rooms with 24/7 power, fibre Wi-Fi and secure parking.",
+          "Luxury hotel in Obiaruku, minutes from Abraka and Delta State University (DELSU). Standard, Deluxe, Executive and Suite rooms with 24/7 power, fibre Wi-Fi and secure parking.",
       },
-      { property: "og:title", content: "Garen's Garden Hotel & Suite" },
+      { property: "og:title", content: "Garen's Garden Hotel & Suite — Obiaruku, near Abraka" },
       {
         property: "og:description",
-        content: "Obiaruku's finest bed & breakfast, minutes from Abraka. Reborn 2026.",
+        content:
+          "Obiaruku's finest hotel, minutes from Abraka and DELSU. Reborn 2026.",
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
     ],
+    scripts: [{ type: "application/ld+json", children: JSON.stringify(hotelJsonLd) }],
   }),
   component: Index,
 });
@@ -57,9 +92,9 @@ function Index() {
               A sanctuary of stone,<br className="hidden md:block" /> light, and quiet earth.
             </h1>
             <p className="font-sans text-zinc-300/90 text-base md:text-lg max-w-[56ch] mx-auto text-pretty mb-14 leading-relaxed animate-fade-in-up delay-300">
-              Welcome to Garen&rsquo;s Garden — Obiaruku&rsquo;s finest room bed &amp; breakfast, just
-              minutes from Abraka, where comfort, warmth, and personalized service come together to make
-              every guest feel at home.
+              Welcome to Garen&rsquo;s Garden — a luxury hotel in Obiaruku, just minutes from Abraka
+              and Delta State University (DELSU), where comfort, warmth, and personalized service come
+              together to make every guest feel at home.
             </p>
             <div className="w-full aspect-[4/3] sm:aspect-[16/9] lg:aspect-[21/9] overflow-hidden ring-1 ring-gold/10 rounded-[min(1vw,12px)] max-h-[520px] animate-scale-in delay-400">
               <img
@@ -180,7 +215,8 @@ function Index() {
               <div className="space-y-6 text-zinc-300/90 leading-relaxed">
                 <p>
                   Garen&rsquo;s Garden is Obiaruku&rsquo;s finest bed &amp; breakfast reborn in 2026 with a
-                  fresh vision of hospitality. Our mission is simple yet profound: to create a haven
+                  fresh vision of hospitality — located in Obiaruku, just minutes away from Abraka and
+                  Delta State University (DELSU). Our mission is simple yet profound: to create a haven
                   where comfort, warmth, and personalized service make every guest feel at home.
                 </p>
                 <p>
