@@ -1,5 +1,4 @@
 import {
-  roomStandardImg as roomStandard,
   roomDeluxeImg as roomDeluxe,
   roomExecutiveImg as roomExecutive,
 } from "@/lib/room-images";
