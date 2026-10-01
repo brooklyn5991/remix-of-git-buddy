@@ -51,6 +51,28 @@ function BookTier() {
   const tierName = TIERS[tierParam as keyof typeof TIERS];
   if (!tierName) throw notFound();
 
+  if (tierName === "Standard") {
+    return (
+      <div className="bg-deep font-sans text-gold-light min-h-screen antialiased">
+        <SiteNav />
+        <main className="pt-32 pb-24 px-6 text-center">
+          <p className="text-[10px] uppercase tracking-[0.4em] text-gold mb-4">Standard Collection</p>
+          <h1 className="font-serif text-3xl sm:text-4xl text-gold-light mb-4">Unavailable</h1>
+          <p className="text-zinc-400 max-w-md mx-auto mb-8">
+            Standard rooms are no longer offered. Please choose from our Deluxe, Executive, or Suite rooms.
+          </p>
+          <Link
+            to="/rooms"
+            className="inline-block text-[11px] uppercase tracking-[0.3em] text-deep bg-gold hover:bg-gold-light px-6 py-3 transition-colors"
+          >
+            View rooms
+          </Link>
+        </main>
+        <SiteFooter />
+      </div>
+    );
+  }
+
   const fetchRooms = useServerFn(listRooms);
   const fetchBooked = useServerFn(getBookedRoomIds);
   const confirmPaystackBooking = useServerFn(confirmPaystackBookingByTier);

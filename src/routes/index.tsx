@@ -15,7 +15,7 @@ const hotelJsonLd = {
   "@type": "Hotel",
   name: "Garen's Garden Hotel & Suite",
   description:
-    "Obiaruku's finest boutique bed & breakfast, just minutes from Abraka and Delta State University (DELSU). Standard, Deluxe, Executive and Suite rooms with 24/7 solar power, fibre Wi-Fi, complimentary breakfast and secure in-compound parking.",
+    "Obiaruku's finest boutique bed & breakfast, just minutes from Abraka and Delta State University (DELSU). Deluxe, Executive and Suite rooms with 24/7 solar power, fibre Wi-Fi, complimentary breakfast and secure in-compound parking.",
   url: "https://garensgarden.lovable.app/",
   image: "https://garensgarden.lovable.app/og-image.jpg",
   telephone: "+2349064050424",
@@ -50,7 +50,7 @@ export const Route = createFileRoute("/")({
       {
         name: "description",
         content:
-          "Luxury hotel in Obiaruku, minutes from Abraka and Delta State University (DELSU). Standard, Deluxe, Executive and Suite rooms with 24/7 power, fibre Wi-Fi and secure parking.",
+          "Luxury hotel in Obiaruku, minutes from Abraka and Delta State University (DELSU). Deluxe, Executive and Suite rooms with 24/7 power, fibre Wi-Fi and secure parking.",
       },
       { property: "og:title", content: "Garen's Garden Hotel & Suite — Obiaruku, near Abraka" },
       {
@@ -165,7 +165,7 @@ function Index() {
                 </span>
               </div>
 
-              {/* Standard/Deluxe */}
+              {/* Deluxe */}
               <div className="bg-warm/5 ring-1 ring-gold/10 p-1 flex flex-col animate-fade-in-up delay-300 hover-lift">
                 <div className="w-full aspect-[4/3] md:aspect-square overflow-hidden rounded-[8px] mb-2 group">
                   <img
@@ -182,7 +182,7 @@ function Index() {
                     Room Collection
                   </span>
                   <p className="text-gold-light mt-2 font-serif text-lg leading-tight">
-                    Standard, Deluxe, Executive &amp; Suite
+                    Deluxe, Executive &amp; Suite
                   </p>
                 </div>
               </div>
@@ -290,7 +290,7 @@ function Index() {
                 {
                   title: "The Estate",
                   items: [
-                    "Standard · Deluxe · Executive · Suite",
+                    "Deluxe · Executive · Suite",
                     "Secure in-compound parking",
                     "Estate security & CCTV",
                     "Landscaped garden courtyard",

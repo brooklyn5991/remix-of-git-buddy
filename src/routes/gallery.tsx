@@ -4,7 +4,6 @@ import { SiteFooter } from "@/components/site-footer";
 import {
   roomExecutiveImg as roomExecutive,
   roomDeluxeImg as roomDeluxe,
-  roomStandardImg as roomStandard,
   roomSuiteImg as roomSuite,
 } from "@/lib/room-images";
 
@@ -41,7 +40,6 @@ const items = [
   { src: roomDeluxe, alt: "Deluxe Room", caption: "Deluxe Room" },
   { src: grounds, alt: "Garen's Garden grounds", caption: "The Grounds" },
   { src: bathroom, alt: "Walk-in shower bath", caption: "The Bath" },
-  { src: roomStandard, alt: "Standard Room", caption: "Standard Room" },
   { src: showerGel, alt: "In-room shower gel amenity", caption: "Shower Gel" },
 ];
 

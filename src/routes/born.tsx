@@ -253,13 +253,13 @@ function methodLabel(m: string | null) {
   return "Paystack";
 }
 
-const TIERS = ["Standard", "Deluxe", "Executive", "Suite"] as const;
+const TIERS = ["Deluxe", "Executive", "Suite"] as const;
 
 function AdminManualBooking({ creds, onBooked }: { creds: Creds; onBooked: () => void }) {
   const book = useServerFn(adminCreateManualBooking);
   const listRooms = useServerFn(adminListAvailableRooms);
   const [open, setOpen] = useState(false);
-  const [tier, setTier] = useState<(typeof TIERS)[number]>("Standard");
+  const [tier, setTier] = useState<(typeof TIERS)[number]>("Deluxe");
   const [roomId, setRoomId] = useState("");
   const [guestName, setGuestName] = useState("");
   const [guestEmail, setGuestEmail] = useState("");

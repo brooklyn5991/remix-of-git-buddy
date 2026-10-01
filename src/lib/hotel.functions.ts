@@ -130,9 +130,17 @@ const tierBookingSchema = z.object({
   check_in: z.string(),
   check_out: z.string(),
 });
+
+// Tiers that exist in schemas for backwards compatibility but can no longer be booked.
+const UNAVAILABLE_TIERS = new Set(["Standard"]);
+function assertTierBookable(tier: string) {
+  if (UNAVAILABLE_TIERS.has(tier)) throw new Error(`${tier} rooms are unavailable.`);
+}
+
 export const createReservationByTier = createServerFn({ method: "POST" })
   .inputValidator((d: unknown) => tierBookingSchema.parse(d))
   .handler(async ({ data }) => {
+    assertTierBookable(data.tier);
     if (new Date(data.check_out) <= new Date(data.check_in)) {
       throw new Error("Check-out must be after check-in");
     }
@@ -347,6 +355,7 @@ const confirmPaystackBookingSchema = z.object({
 export const confirmPaystackBookingByTier = createServerFn({ method: "POST" })
   .inputValidator((d: unknown) => confirmPaystackBookingSchema.parse(d))
   .handler(async ({ data }) => {
+    assertTierBookable(data.tier);
     const { fulfillPaystackReservation } = await import("@/lib/paystack-fulfill.server");
     const reservation = await fulfillPaystackReservation(data);
     return { ok: true, reservation };
@@ -496,6 +505,7 @@ const adminAvailabilitySchema = adminCredsSchema.extend({
 export const adminListAvailableRooms = createServerFn({ method: "POST" })
   .inputValidator((d: unknown) => adminAvailabilitySchema.parse(d))
   .handler(async ({ data }) => {
+    assertTierBookable(data.tier);
     const { verifyAdminCreds } = await import("@/lib/admin-auth.server");
     await verifyAdminCreds(data.username, data.password);
     if (!data.check_in || !data.check_out) return [];
@@ -552,6 +562,7 @@ const adminBookingSchema = adminCredsSchema.extend({
 export const adminCreateManualBooking = createServerFn({ method: "POST" })
   .inputValidator((d: unknown) => adminBookingSchema.parse(d))
   .handler(async ({ data }) => {
+    assertTierBookable(data.tier);
     const { verifyAdminCreds } = await import("@/lib/admin-auth.server");
     await verifyAdminCreds(data.username, data.password);
     if (new Date(data.check_out) <= new Date(data.check_in)) {
