@@ -165,7 +165,7 @@ function Index() {
                 </span>
               </div>
 
-              {/* Standard/Deluxe */}
+              {/* Deluxe */}
               <div className="bg-warm/5 ring-1 ring-gold/10 p-1 flex flex-col animate-fade-in-up delay-300 hover-lift">
                 <div className="w-full aspect-[4/3] md:aspect-square overflow-hidden rounded-[8px] mb-2 group">
                   <img
