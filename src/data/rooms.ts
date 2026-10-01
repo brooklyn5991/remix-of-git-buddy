@@ -8,7 +8,7 @@ export type Room = {
   slug: string;
   name: string;
   tagline: string;
-  tier: "Standard" | "Deluxe" | "Executive";
+  tier: "Deluxe" | "Executive";
   price: number; // NGN per night
   bed: string;
   size: string;
@@ -23,27 +23,6 @@ export const currency = (n: number) =>
   new Intl.NumberFormat("en-NG", { style: "currency", currency: "NGN", maximumFractionDigits: 0 }).format(n);
 
 export const rooms: Room[] = [
-  {
-    slug: "standard",
-    name: "The Standard Room",
-    tagline: "Warm, quiet, and considered.",
-    tier: "Standard",
-    price: 23000,
-    bed: "Queen orthopedic",
-    size: "22 m²",
-    sleeps: 2,
-    image: roomStandard,
-    inventory: 8,
-    description:
-      "Our entry room, thoughtfully outfitted with everything you need for a restful night — warm wood floors, soft gold light, and an en-suite bath with constant hot water.",
-    features: [
-      "Queen orthopedic mattress",
-      "Split-unit air conditioning",
-      "En-suite bathroom with hot water",
-      "High-speed fiber Wi-Fi",
-      "Complimentary breakfast",
-    ],
-  },
   {
     slug: "deluxe",
     name: "The Deluxe Room",
