@@ -9,46 +9,30 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as RoomsRouteImport } from './routes/rooms'
-import { Route as GalleryRouteImport } from './routes/gallery'
-import { Route as ContactRouteImport } from './routes/contact'
-import { Route as BornRouteImport } from './routes/born'
-import { Route as AuthRouteImport } from './routes/auth'
-import { Route as AboutRouteImport } from './routes/about'
-import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as IndexRouteImport } from './routes/index'
-import { Route as RoomsIndexRouteImport } from './routes/rooms.index'
-import { Route as SquadcoIdRouteImport } from './routes/squadco.$id'
-import { Route as RoomsSlugRouteImport } from './routes/rooms.$slug'
-import { Route as ReservationIdRouteImport } from './routes/reservation.$id'
-import { Route as BookTierRouteImport } from './routes/book.$tier'
-import { Route as AuthenticatedVaultRouteImport } from './routes/_authenticated/vault'
+import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
+import { Route as AboutRouteImport } from './routes/about'
+import { Route as AuthRouteImport } from './routes/auth'
+import { Route as BornRouteImport } from './routes/born'
+import { Route as ContactRouteImport } from './routes/contact'
+import { Route as GalleryRouteImport } from './routes/gallery'
+import { Route as RoomsRouteImport } from './routes/rooms'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
+import { Route as AuthenticatedVaultRouteImport } from './routes/_authenticated/vault'
+import { Route as BookTierRouteImport } from './routes/book.$tier'
+import { Route as ReservationIdRouteImport } from './routes/reservation.$id'
+import { Route as RoomsIndexRouteImport } from './routes/rooms.index'
+import { Route as RoomsSlugRouteImport } from './routes/rooms.$slug'
+import { Route as SquadcoIdRouteImport } from './routes/squadco.$id'
 import { Route as ApiPublicPaystackWebhookRouteImport } from './routes/api/public/paystack/webhook'
 
-const RoomsRoute = RoomsRouteImport.update({
-  id: '/rooms',
-  path: '/rooms',
+const IndexRoute = IndexRouteImport.update({
+  id: '/',
+  path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
-const GalleryRoute = GalleryRouteImport.update({
-  id: '/gallery',
-  path: '/gallery',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ContactRoute = ContactRouteImport.update({
-  id: '/contact',
-  path: '/contact',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const BornRoute = BornRouteImport.update({
-  id: '/born',
-  path: '/born',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AuthRoute = AuthRouteImport.update({
-  id: '/auth',
-  path: '/auth',
+const AuthenticatedRouteRoute = AuthenticatedRouteRouteImport.update({
+  id: '/_authenticated',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AboutRoute = AboutRouteImport.update({
@@ -56,13 +40,49 @@ const AboutRoute = AboutRouteImport.update({
   path: '/about',
   getParentRoute: () => rootRouteImport,
 } as any)
-const AuthenticatedRouteRoute = AuthenticatedRouteRouteImport.update({
-  id: '/_authenticated',
+const AuthRoute = AuthRouteImport.update({
+  id: '/auth',
+  path: '/auth',
   getParentRoute: () => rootRouteImport,
 } as any)
-const IndexRoute = IndexRouteImport.update({
-  id: '/',
-  path: '/',
+const BornRoute = BornRouteImport.update({
+  id: '/born',
+  path: '/born',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ContactRoute = ContactRouteImport.update({
+  id: '/contact',
+  path: '/contact',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const GalleryRoute = GalleryRouteImport.update({
+  id: '/gallery',
+  path: '/gallery',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const RoomsRoute = RoomsRouteImport.update({
+  id: '/rooms',
+  path: '/rooms',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthenticatedDashboardRoute = AuthenticatedDashboardRouteImport.update({
+  id: '/dashboard',
+  path: '/dashboard',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedVaultRoute = AuthenticatedVaultRouteImport.update({
+  id: '/vault',
+  path: '/vault',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const BookTierRoute = BookTierRouteImport.update({
+  id: '/book/$tier',
+  path: '/book/$tier',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ReservationIdRoute = ReservationIdRouteImport.update({
+  id: '/reservation/$id',
+  path: '/reservation/$id',
   getParentRoute: () => rootRouteImport,
 } as any)
 const RoomsIndexRoute = RoomsIndexRouteImport.update({
@@ -70,35 +90,15 @@ const RoomsIndexRoute = RoomsIndexRouteImport.update({
   path: '/',
   getParentRoute: () => RoomsRoute,
 } as any)
-const SquadcoIdRoute = SquadcoIdRouteImport.update({
-  id: '/squadco/$id',
-  path: '/squadco/$id',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const RoomsSlugRoute = RoomsSlugRouteImport.update({
   id: '/$slug',
   path: '/$slug',
   getParentRoute: () => RoomsRoute,
 } as any)
-const ReservationIdRoute = ReservationIdRouteImport.update({
-  id: '/reservation/$id',
-  path: '/reservation/$id',
+const SquadcoIdRoute = SquadcoIdRouteImport.update({
+  id: '/squadco/$id',
+  path: '/squadco/$id',
   getParentRoute: () => rootRouteImport,
-} as any)
-const BookTierRoute = BookTierRouteImport.update({
-  id: '/book/$tier',
-  path: '/book/$tier',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AuthenticatedVaultRoute = AuthenticatedVaultRouteImport.update({
-  id: '/vault',
-  path: '/vault',
-  getParentRoute: () => AuthenticatedRouteRoute,
-} as any)
-const AuthenticatedDashboardRoute = AuthenticatedDashboardRouteImport.update({
-  id: '/dashboard',
-  path: '/dashboard',
-  getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
 const ApiPublicPaystackWebhookRoute =
   ApiPublicPaystackWebhookRouteImport.update({
@@ -230,46 +230,11 @@ export interface RootRouteChildren {
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/rooms': {
-      id: '/rooms'
-      path: '/rooms'
-      fullPath: '/rooms'
-      preLoaderRoute: typeof RoomsRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/gallery': {
-      id: '/gallery'
-      path: '/gallery'
-      fullPath: '/gallery'
-      preLoaderRoute: typeof GalleryRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/contact': {
-      id: '/contact'
-      path: '/contact'
-      fullPath: '/contact'
-      preLoaderRoute: typeof ContactRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/born': {
-      id: '/born'
-      path: '/born'
-      fullPath: '/born'
-      preLoaderRoute: typeof BornRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/auth': {
-      id: '/auth'
-      path: '/auth'
-      fullPath: '/auth'
-      preLoaderRoute: typeof AuthRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/about': {
-      id: '/about'
-      path: '/about'
-      fullPath: '/about'
-      preLoaderRoute: typeof AboutRouteImport
+    '/': {
+      id: '/'
+      path: '/'
+      fullPath: '/'
+      preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/_authenticated': {
@@ -279,11 +244,74 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedRouteRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/': {
-      id: '/'
-      path: '/'
-      fullPath: '/'
-      preLoaderRoute: typeof IndexRouteImport
+    '/about': {
+      id: '/about'
+      path: '/about'
+      fullPath: '/about'
+      preLoaderRoute: typeof AboutRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/auth': {
+      id: '/auth'
+      path: '/auth'
+      fullPath: '/auth'
+      preLoaderRoute: typeof AuthRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/born': {
+      id: '/born'
+      path: '/born'
+      fullPath: '/born'
+      preLoaderRoute: typeof BornRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/contact': {
+      id: '/contact'
+      path: '/contact'
+      fullPath: '/contact'
+      preLoaderRoute: typeof ContactRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/gallery': {
+      id: '/gallery'
+      path: '/gallery'
+      fullPath: '/gallery'
+      preLoaderRoute: typeof GalleryRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/rooms': {
+      id: '/rooms'
+      path: '/rooms'
+      fullPath: '/rooms'
+      preLoaderRoute: typeof RoomsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_authenticated/dashboard': {
+      id: '/_authenticated/dashboard'
+      path: '/dashboard'
+      fullPath: '/dashboard'
+      preLoaderRoute: typeof AuthenticatedDashboardRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/vault': {
+      id: '/_authenticated/vault'
+      path: '/vault'
+      fullPath: '/vault'
+      preLoaderRoute: typeof AuthenticatedVaultRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/book/$tier': {
+      id: '/book/$tier'
+      path: '/book/$tier'
+      fullPath: '/book/$tier'
+      preLoaderRoute: typeof BookTierRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/reservation/$id': {
+      id: '/reservation/$id'
+      path: '/reservation/$id'
+      fullPath: '/reservation/$id'
+      preLoaderRoute: typeof ReservationIdRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/rooms/': {
@@ -293,13 +321,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof RoomsIndexRouteImport
       parentRoute: typeof RoomsRoute
     }
-    '/squadco/$id': {
-      id: '/squadco/$id'
-      path: '/squadco/$id'
-      fullPath: '/squadco/$id'
-      preLoaderRoute: typeof SquadcoIdRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/rooms/$slug': {
       id: '/rooms/$slug'
       path: '/$slug'
@@ -307,33 +328,12 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof RoomsSlugRouteImport
       parentRoute: typeof RoomsRoute
     }
-    '/reservation/$id': {
-      id: '/reservation/$id'
-      path: '/reservation/$id'
-      fullPath: '/reservation/$id'
-      preLoaderRoute: typeof ReservationIdRouteImport
+    '/squadco/$id': {
+      id: '/squadco/$id'
+      path: '/squadco/$id'
+      fullPath: '/squadco/$id'
+      preLoaderRoute: typeof SquadcoIdRouteImport
       parentRoute: typeof rootRouteImport
-    }
-    '/book/$tier': {
-      id: '/book/$tier'
-      path: '/book/$tier'
-      fullPath: '/book/$tier'
-      preLoaderRoute: typeof BookTierRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/_authenticated/vault': {
-      id: '/_authenticated/vault'
-      path: '/vault'
-      fullPath: '/vault'
-      preLoaderRoute: typeof AuthenticatedVaultRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
-    }
-    '/_authenticated/dashboard': {
-      id: '/_authenticated/dashboard'
-      path: '/dashboard'
-      fullPath: '/dashboard'
-      preLoaderRoute: typeof AuthenticatedDashboardRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
     }
     '/api/public/paystack/webhook': {
       id: '/api/public/paystack/webhook'
